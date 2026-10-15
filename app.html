@@ -2,7 +2,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;1,700;1,800&family=Black+Han+Sans&family=Playfair+Display:wght@800;900&family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;1,700;1,800&family=Black+Han+Sans&family=Playfair+Display:wght@800;900&family=Kaushan+Script&family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
 <style>
 /* Layout: 아레나 조명 아래의 링. 위에서 떨어지는 스포트라이트 색이 페이즈(레드 코너=라운드, 블루 코너=휴식, 골드=준비)에 따라 바뀌고,
    가운데 스톱워치 다이얼이 주인공. 나머지는 유리 같은 카드 위에 조용히. */
@@ -496,10 +496,43 @@ body.glove #v-timer{touch-action:manipulation}
   .libr .code{min-width:0;font-size:19px}
   .opt:not(.col){flex-wrap:wrap}
 }
+
+/* 시작 화면 */
+.splash{position:fixed;inset:0;z-index:100000;background:#09090b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:24px max(24px,env(safe-area-inset-right,0px)) 24px max(24px,env(safe-area-inset-left,0px));overflow:hidden;cursor:pointer;transition:opacity .45s ease,visibility .45s}
+.splash.out{opacity:0;visibility:hidden}
+.splash{animation:spauto .45s ease 4.2s forwards}
+@keyframes spauto{to{opacity:0;visibility:hidden;pointer-events:none}}
+.splash .stripe{position:absolute;left:-30%;top:50%;width:160%;height:34%;background:linear-gradient(90deg,#c22d4c,#ee4a6b);transform:translateY(-50%) rotate(-24deg) scaleX(0);transform-origin:left center;opacity:.9;animation:stripe .7s cubic-bezier(.7,0,.2,1) .05s forwards}
+@keyframes stripe{to{transform:translateY(-50%) rotate(-24deg) scaleX(1)}}
+.splash .sp-mark{position:relative;width:78px;height:65px;filter:drop-shadow(0 10px 24px rgba(0,0,0,.6));opacity:0;animation:spmark .55s cubic-bezier(.2,1.4,.4,1) .45s forwards}
+@keyframes spmark{from{opacity:0;transform:scale(.4) rotate(-10deg)}to{opacity:1;transform:none}}
+.splash .sp-words{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.splash .w{display:block;opacity:0;transform:translateY(14px);animation:spw .45s cubic-bezier(.2,.9,.3,1) forwards;color:#f4f5f9;line-height:1.02;white-space:nowrap}
+.splash .w b{font-weight:inherit;color:#ff5a7a;text-shadow:0 0 18px rgba(255,90,122,.55)}
+.splash.script .w{font-family:"Kaushan Script","Brush Script MT",cursive;font-size:clamp(40px,12vw,64px);transform:translateY(14px) rotate(-6deg)}
+.splash.script .w b{color:#fff;text-shadow:0 0 18px rgba(255,255,255,.5)}
+.splash.serif .w{font-family:var(--f-brand);font-weight:900;font-size:clamp(30px,9vw,48px);letter-spacing:.04em;text-transform:uppercase}
+@keyframes spw{to{opacity:1;transform:none}}
+.splash.script .w{animation-name:spws}
+@keyframes spws{to{opacity:1;transform:rotate(-6deg)}}
+.splash .sp-into{position:relative;font-family:var(--f-brand);font-weight:900;font-size:15px;letter-spacing:.6em;padding-left:.6em;color:#ff5a7a;opacity:0;animation:spfade .5s ease 1.6s forwards}
+.splash .sp-tag{position:relative;font-family:var(--f-body);font-weight:700;font-size:clamp(15px,4.2vw,18px);color:#f4f5f9;opacity:0;transform:translateY(8px);animation:spw .6s ease 1.9s forwards;text-align:center;text-wrap:balance}
+.splash .sp-skip{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom,0px));font-size:12px;color:rgba(255,255,255,.45);opacity:0;animation:spfade .4s ease 1s forwards}
+@keyframes spfade{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.splash *{opacity:1!important;transform:none!important}.splash .stripe{transform:translateY(-50%) rotate(-24deg)!important}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
 <div class="glow" aria-hidden="true"></div>
+<div class="splash" id="splash" role="presentation">
+  <div class="stripe"></div>
+  <svg class="sp-mark" viewBox="0 0 120 100" aria-hidden="true"><use href="#ib-mark"/></svg>
+  <div class="sp-words" id="sp-words"></div>
+  <div class="sp-into">INTO BOXING</div>
+  <div class="sp-tag">당신을 새로운 복싱의 세계로 초대합니다</div>
+  <div class="sp-skip">화면을 누르면 바로 시작</div>
+</div>
+
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="ib-mark" viewBox="0 0 120 100">
   <polygon fill="#ee4a6b" points="0,0 54,24 54,50 27.6,50 27.6,38"/>
   <polygon fill="#c22d4c" points="27.6,50 54,50 54,76 0,100 27.6,62"/>
@@ -2127,4 +2160,21 @@ const td=new Date();$('todaychip').textContent=`${td.getMonth()+1}월 ${td.getDa
 renderSetup();render();renderDDayChip();
 const h=location.hash.slice(1);if(TABS[h])tab(h);
 })();
+
+/* ---------- 시작 화면 ---------- */
+(function(){
+  const sp=document.getElementById('splash');if(!sp)return;
+  let seen=false;try{seen=sessionStorage.getItem('ib-splash')==='1'}catch(e){}
+  if(seen){sp.remove();return}
+  try{sessionStorage.setItem('ib-splash','1')}catch(e){}
+  const P=[['script',['Intensify','Now','Take','Over']],['serif',['Imagine','New','Trails','Opening']]];
+  const [style,words]=P[Math.random()<.5?0:1];
+  sp.classList.add(style);
+  document.getElementById('sp-words').innerHTML=words.map((w,i)=>`<span class="w" style="animation-delay:${.7+i*.18}s"><b>${w[0]}</b>${w.slice(1)}</span>`).join('');
+  let done=false;
+  const close=()=>{if(done)return;done=true;sp.classList.add('out');setTimeout(()=>sp.remove(),500)};
+  sp.addEventListener('click',close);
+  setTimeout(close,3400);
+})();
+
 </script>
