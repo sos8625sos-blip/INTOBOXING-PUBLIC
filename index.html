@@ -931,7 +931,7 @@ const TYPES=['샌드백','섀도','미트','스파링','줄넘기','근력','러
 const RPE=[[1,'가볍게','#33c47a'],[2,'적당히','#9bd45a'],[3,'힘듦','#f6c445'],[4,'아주 힘듦','#ff8a3d'],[5,'한계','#ff3b4f']];
 const NOTE_TAGS=['코치 피드백','기술','목표','컨디션','기타'];
 const DEFAULT_PRESETS=[
-  {id:'am',name:'아마추어 경기',round:180,rest:60,rounds:3,type:'스파링'},
+  {id:'am',name:'아마추어 경기',round:180,rest:60,rounds:3,type:'스파링',calls:false},
   {id:'rope',name:'줄넘기 워밍업',round:180,rest:30,rounds:2,type:'줄넘기',calls:false},
   {id:'shadow',name:'섀도복싱',round:120,rest:30,rounds:6,type:'섀도'},
   {id:'bag',name:'샌드백 인터벌',round:60,rest:30,rounds:10,type:'샌드백'},
@@ -967,6 +967,7 @@ function load(){
     d.v=4;
   }
   if(d.v<5){const r=d.presets.find(p=>p.id==='rope');if(r&&r.calls===undefined)r.calls=false;d.v=5}
+  if((d.v||0)>=6&&d.v<7){const a=d.presets.find(p=>p.id==='am'),r=d.presets.find(p=>p.id==='rope');if(a)a.calls=false;if(r)r.calls=false;d.v=7}
   if(d.v<6){
     const g=id=>d.presets.find(p=>p.id===id);
     if(g('shadow'))g('shadow').rest=30;
@@ -975,7 +976,8 @@ function load(){
     const order=['am','rope','shadow','bag','mitt'];
     DEFAULT_PRESETS.forEach(p=>{if(!g(p.id))d.presets.push({...p})});
     d.presets.sort((a,b)=>{const i=order.indexOf(a.id),j=order.indexOf(b.id);return (i<0?99:i)-(j<0?99:j)});
-    d.v=6;
+    const a=d.presets.find(p=>p.id==='am');if(a)a.calls=false;
+    d.v=7;
   }
   if(!d.routines){
     d.routines=[{id:'r1',name:'기본 풀코스',blocks:['rope','shadow','bag']},{id:'r2',name:'섀도 → 샌드백',blocks:['shadow','bag']},{id:'r3',name:'미트 데이',blocks:['rope','shadow','mitt']}];
@@ -1278,8 +1280,17 @@ function drawClock(){
   const lc=Math.floor(frac*60+.0001);
   if(lc!==litCount){litCount=lc;tickEls.forEach((el,i)=>el.classList.toggle('lit',i<lc))}
 }
+function comboVisible(){
+  if(cfg().combo==='off'&&!S.combo)return false;
+  const st=curStep();
+  if(S.phase==='work')return blockCalls();
+  if(S.phase==='prep')return S.blocks[0]&&S.blocks[0].calls!==false;
+  if(S.phase==='rest'){const n=S.steps[S.si+1];return !n||S.blocks[n.bi].calls!==false}
+  return S.blocks.some(b=>b.calls!==false);
+}
 function renderCombo(){
   const c=cfg();
+  $('combo').hidden=!comboVisible();
   if(S.combo){
     $('toks').innerHTML=S.combo.split('-').map(tokHTML).join('');
     $('cbelow').innerHTML=`<div class="legend"><span><i style="background:var(--red)"></i>앞손(${isSouth()?'오른손':'왼손'})</span><span><i style="background:#e6e9f2"></i>뒷손(${isSouth()?'왼손':'오른손'})</span><span><i style="border:1.5px solid var(--blue)"></i>방어</span></div>`;
