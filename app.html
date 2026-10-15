@@ -404,6 +404,17 @@ textarea.inp{height:auto;min-height:100px;padding:12px 14px;resize:vertical;line
 .evrow .ek{align-self:flex-start;font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;background:rgba(246,196,69,.18);color:var(--gold)}
 .evrow .eb{flex:none;font-family:var(--f-num);font-style:italic;font-weight:800;font-size:20px;color:var(--gold)}
 .dhb{display:flex;gap:6px}
+.vrlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.vr{display:flex;align-items:center;gap:8px;padding:10px;border-radius:16px;background:rgba(0,0,0,.28);border:1px solid var(--line)}
+.vr .tok{width:40px;height:46px;animation:none;flex:none}.vr .tok .n{font-size:22px}.vr .tok .l{display:none}
+.vr .w{flex:1;min-width:0;font-weight:800;font-size:15px}
+.vr .w small{display:block;font-size:11px;font-weight:700;color:var(--mute)}
+.vr .w small.ok{color:var(--green)}
+.vr button{height:34px;padding:0 10px;border-radius:10px;font-size:12px;font-weight:800;background:rgba(255,255,255,.08);flex:none}
+.vr button.recb{background:var(--red);color:#fff}
+.vr button.recb.on{animation:pulse .8s ease-in-out infinite}
+.vr-warn{margin:0;padding:12px 14px;border-radius:14px;background:rgba(246,196,69,.12);color:var(--gold);font-size:13px;font-weight:700}
+@media (max-width:400px){.vrlist{grid-template-columns:1fr}}
 .modechip{align-self:center;font-size:12px;font-weight:800;color:var(--mute);padding:4px 12px;border-radius:99px;border:1px solid var(--line-2);margin-bottom:-6px}
 body.glove .cb .c{width:76px;height:76px}
 body.glove .cb .c svg{width:30px;height:30px}
@@ -577,8 +588,10 @@ body.glove #v-timer{touch-action:manipulation}
           <div class="opt"><div class="t"><b>음성 콜아웃</b><span>콤비만 소리 내어 불러줘요</span></div><button class="sw" id="sw-voice" role="switch" aria-label="음성 콜아웃"><i></i></button></div>
           <div class="opt col" id="opt-vo">
             <div class="t"><b>목소리</b><span id="vo-hint"></span></div>
+            <div class="seg" id="seg-vsrc"></div>
             <div class="seg" id="seg-tone"></div>
             <select class="inp vsel" id="vo-sel" aria-label="음성 선택"></select>
+            <button class="pill ghost" id="b-rec" style="align-self:flex-start"></button>
           </div>
           <div class="opt"><div class="t"><b>10초 전 경고음</b><span>라운드 끝나기 10초 전 "딱딱"</span></div><button class="sw" id="sw-warn" role="switch" aria-label="10초 전 경고음"><i></i></button></div>
           <div class="opt">
@@ -788,6 +801,21 @@ body.glove #v-timer{touch-action:manipulation}
   </div>
 </div>
 
+<!-- 목소리 녹음 시트 -->
+<div class="sheetwrap" id="sh-vrec" hidden>
+  <div class="sheet" role="dialog" aria-labelledby="vr-h">
+    <div class="grab"></div>
+    <h3 id="vr-h">콜 목소리 녹음</h3>
+    <p class="muted" style="margin:-6px 0 0;font-size:14px">단어마다 <b style="color:var(--ink)">녹음</b>을 누르고 크고 짧게 외쳐주세요. 2초 뒤 자동으로 멈춰요. 녹음은 이 휴대폰에만 저장되고, 콜은 숫자 방식(원·투·쓰리)으로 불러요.</p>
+    <p class="vr-warn" id="vr-warn" hidden></p>
+    <div class="vrlist" id="vr-list"></div>
+    <div class="acts">
+      <button class="btn" id="vr-test">콤비로 들어보기</button>
+      <button class="btn main" id="vr-close">완료</button>
+    </div>
+  </div>
+</div>
+
 <!-- 월간 리포트 시트 -->
 <div class="sheetwrap" id="sh-rep" hidden>
   <div class="sheet" role="dialog" aria-label="월간 리포트">
@@ -904,7 +932,7 @@ function load(){
       notes:[],weights:[]
     };
   }
-  d.cfg=Object.assign({round:180,rest:60,rounds:3,prep:10,combo:'mid',call:'num',voice:true,warn:true,preset:'am',goal:3,mode:'preset',routine:null,after:'ask',lens:[1,2,3],mine:'mix',tone:'deep',voiceName:'',stance:'ortho',glove:false},d.cfg);
+  d.cfg=Object.assign({round:180,rest:60,rounds:3,prep:10,combo:'mid',call:'num',voice:true,warn:true,preset:'am',goal:3,mode:'preset',routine:null,after:'ask',lens:[1,2,3],mine:'mix',tone:'deep',voiceName:'',stance:'ortho',glove:false,vsrc:'tts'},d.cfg);
   d.records=(d.records||[]).map(normRec);
   d.notes=d.notes||[];d.weights=d.weights||[];d.events=d.events||[];d.combos=d.combos||[];
   if(!d.presets.some(p=>p.id==='rope')&&!d.routines)d.presets.push({...DEFAULT_PRESETS.find(p=>p.id==='rope')});
@@ -982,12 +1010,57 @@ function pickVoice(){
   }catch(e){}
 }
 if('speechSynthesis' in window){pickVoice();try{speechSynthesis.onvoiceschanged=pickVoice}catch(e){}}
+let curUtter=null,speechUnlocked=false;
+function unlockSpeech(){
+  if(speechUnlocked||!('speechSynthesis' in window))return;
+  try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;u.lang='ko-KR';speechSynthesis.speak(u);speechUnlocked=true}catch(e){}
+}
 function speak(text,force){
   if((!cfg().voice&&!force)||!('speechSynthesis' in window))return;
-  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='ko-KR';if(koVoice)u.voice=koVoice;
-    const T={deep:[.5,1.2],strong:[.75,1.3],normal:[1,1.3]}[cfg().tone||'deep'];u.pitch=T[0];u.rate=T[1];u.volume=1;speechSynthesis.speak(u)}catch(e){}
+  try{
+    const ss=speechSynthesis,busy=ss.speaking||ss.pending;
+    if(busy)ss.cancel();
+    const u=new SpeechSynthesisUtterance(text);u.lang='ko-KR';if(koVoice)u.voice=koVoice;
+    const T={deep:[.5,1.2],strong:[.75,1.3],normal:[1,1.3]}[cfg().tone||'deep'];u.pitch=T[0];u.rate=T[1];u.volume=1;
+    curUtter=u;
+    setTimeout(()=>{try{ss.resume();ss.speak(u)}catch(e){}},busy?120:0);
+  }catch(e){}
 }
-const hush=()=>{try{speechSynthesis.cancel()}catch(e){}};
+const hush=()=>{try{speechSynthesis.cancel()}catch(e){}stopClips()};
+
+/* ---------- 녹음한 목소리 ---------- */
+const REC_WORDS=[['1','원'],['2','투'],['3','쓰리'],['4','포'],['5','파이브'],['6','식스'],['S','슬립'],['D','더킹'],['W','위빙'],['P','패리'],['B','백스텝']];
+const CLIP={};let clipNodes=[],vbus=null;
+const VDB={db:null,
+  open(){return new Promise((res,rej)=>{if(this.db)return res(this.db);let r;try{r=indexedDB.open('ib-voice',1)}catch(e){return rej(e)}r.onupgradeneeded=()=>r.result.createObjectStore('clips');r.onsuccess=()=>{this.db=r.result;res(this.db)};r.onerror=()=>rej(r.error)})},
+  async tx(mode,fn){const db=await this.open();return new Promise((res,rej)=>{const t=db.transaction('clips',mode),st=t.objectStore('clips'),q=fn(st);t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)})},
+  put(k,v){return this.tx('readwrite',st=>st.put(v,k))},
+  get(k){return this.tx('readonly',st=>st.get(k))},
+  del(k){return this.tx('readwrite',st=>st.delete(k))}
+};
+function trimBuf(b){
+  const d=b.getChannelData(0),th=.035;let a=0,z=d.length-1;
+  while(a<d.length&&Math.abs(d[a])<th)a++;
+  while(z>a&&Math.abs(d[z])<th)z--;
+  const padS=Math.floor(b.sampleRate*.02);a=Math.max(0,a-padS);z=Math.min(d.length-1,z+padS*3);
+  if(z-a<b.sampleRate*.08)return b;
+  const out=ac.createBuffer(1,z-a,b.sampleRate);out.getChannelData(0).set(d.subarray(a,z));return out;
+}
+async function loadClip(k){
+  try{const blob=await VDB.get(k);if(!blob){delete CLIP[k];return}
+    ensureAudio();const raw=await ac.decodeAudioData(await blob.arrayBuffer());CLIP[k]=trimBuf(raw)}catch(e){delete CLIP[k]}
+}
+async function loadAllClips(){if(!('indexedDB' in window))return;await Promise.all(REC_WORDS.map(([k])=>loadClip(k)));renderSetup()}
+const clipCount=()=>REC_WORDS.filter(([k])=>CLIP[k]).length;
+function stopClips(){clipNodes.forEach(n=>{try{n.stop()}catch(e){}});clipNodes=[]}
+function playClips(toks){
+  if(!ac)return false;
+  if(!toks.every(t=>CLIP[t]))return false;
+  if(!vbus){const comp=ac.createDynamicsCompressor();comp.threshold.value=-18;comp.ratio.value=4;vbus=ac.createGain();vbus.gain.value=2.2;vbus.connect(comp).connect(master)}
+  stopClips();let t=ac.currentTime+.03;
+  toks.forEach(k=>{const s=ac.createBufferSource();s.buffer=CLIP[k];s.connect(vbus);s.start(t);clipNodes.push(s);t+=CLIP[k].duration+.04});
+  return true;
+}
 
 /* ---------- 화면 꺼짐 방지 ---------- */
 let wl=null;
@@ -1029,7 +1102,11 @@ function pool(){
 }
 const tokClass=t=>isNaN(t)?'def':(+t%2?'lead':'rear');
 const tokHTML=(t,i=0)=>`<div class="tok ${tokClass(t)}" style="animation-delay:${i*45}ms"><span class="n">${t}</span><span class="l">${SHORT[t]}</span></div>`;
-const sayCombo=(c,force)=>speak(c.split('-').map(t=>cfg().call==='num'?SAY_NUM[t]:sayName(t)).join(', '),force);
+const sayCombo=(c,force)=>{
+  if(!cfg().voice&&!force)return;
+  if(cfg().vsrc==='rec'&&playClips(c.split('-')))return;
+  speak(c.split('-').map(t=>cfg().call==='num'?SAY_NUM[t]:sayName(t)).join(', '),force);
+};
 
 /* ---------- 운동 계획 (프리셋 하나 또는 루틴) ---------- */
 function currentBlocks(){
@@ -1066,7 +1143,7 @@ function startPhase(p,dur){
 }
 function startStep(i){S.si=i;const st=curStep();startPhase(st.ph,st.dur)}
 function begin(){
-  ensureAudio();snapshot();
+  ensureAudio();unlockSpeech();snapshot();
   Object.assign(S,{si:0,workDone:0,roundsDone:0,running:true,startedAt:new Date(),lastCombo:null,bWork:S.blocks.map(()=>0),bRounds:S.blocks.map(()=>0)});
   wake();
   if(cfg().prep>0){S.si=0;startPhase('prep',cfg().prep)}
@@ -1292,8 +1369,13 @@ function renderSetup(){
   seg('seg-after',[['ask','물어보기'],['auto','바로 반영'],['none','반영 안 함']],'after');
   $('after-hint').textContent={ask:'끝나면 항목별로 반영할지 체크하는 화면이 떠요',auto:'묻지 않고 바로 달력에 저장해요',none:'타이머 운동은 달력에 남기지 않아요'}[c.after];
   sw('sw-voice','voice');sw('sw-warn','warn');
+  seg('seg-vsrc',[['tts','기기 음성'],['rec','내가 녹음한 목소리']],'vsrc');
   seg('seg-tone',[['deep','굵고 낮게'],['strong','힘 있게'],['normal','기본']],'tone');
+  const rec=c.vsrc==='rec',n=clipCount();
+  $('seg-tone').hidden=rec;$('b-rec').hidden=!rec;
+  $('b-rec').textContent=n?`녹음 관리 (${n}/${REC_WORDS.length})`:'지금 녹음하기 (11단어)';
   drawVoices();
+  if(rec){$('vo-sel').hidden=true;$('vo-hint').textContent=n===REC_WORDS.length?'녹음한 목소리로 숫자 콜을 불러요':n?`${REC_WORDS.length-n}개 단어가 아직 없어요. 없는 단어가 들어간 콤비는 기기 음성으로 불러요`:'관장님이나 내 목소리로 11단어를 녹음하면 그 목소리로 불러요'}
 }
 $('presets').onclick=e=>{
   const ed=e.target.closest('[data-edit]');
@@ -1326,6 +1408,38 @@ function drawVoices(){
   $('vo-hint').textContent=male?'남성 목소리를 찾아서 골라뒀어요':'이 기기엔 남성 한국어 음성이 없어서, 톤을 낮춰 굵게 들리게 했어요';
 }
 $('vo-sel').onchange=e=>{cfg().voiceName=e.target.value;save();pickVoice();ensureAudio();speak('원, 투, 위빙',true)};
+let recState=null;
+function drawRec(){
+  $('vr-list').innerHTML=REC_WORDS.map(([k,w])=>{const has=!!CLIP[k],on=recState&&recState.k===k;
+    return `<div class="vr">${tokHTML(k)}<div class="w">${w}<small class="${has?'ok':''}">${on?'녹음 중…':has?'녹음됨':'아직 없음'}</small></div>${has?`<button data-vplay="${k}" aria-label="${w} 듣기">듣기</button>`:''}<button class="recb${on?' on':''}" data-vrec="${k}">${on?'멈춤':has?'다시':'녹음'}</button></div>`}).join('');
+}
+async function startRec(k){
+  if(recState){stopRec();return}
+  if(!navigator.mediaDevices||!window.MediaRecorder){$('vr-warn').hidden=false;$('vr-warn').textContent='이 브라우저는 녹음을 지원하지 않아요. 크롬이나 사파리에서 열어주세요.';return}
+  let stream;
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:true,autoGainControl:true}})}
+  catch(e){$('vr-warn').hidden=false;$('vr-warn').textContent='마이크를 쓸 수 없어요. 브라우저 주소창의 권한에서 마이크를 허용해주세요. (미리보기 화면에서는 녹음이 막혀 있어요. intoboxing.vercel.app에서 해주세요)';return}
+  $('vr-warn').hidden=true;ensureAudio();hush();
+  const chunks=[],mr=new MediaRecorder(stream);
+  recState={k,mr,stream,timer:setTimeout(stopRec,2000)};
+  mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  mr.onstop=async()=>{
+    stream.getTracks().forEach(t=>t.stop());
+    const blob=new Blob(chunks,{type:mr.mimeType||'audio/webm'});
+    try{await VDB.put(k,blob);await loadClip(k);if(CLIP[k])playClips([k])}catch(e){toast('저장하지 못했어요. 다시 시도해주세요')}
+    recState=null;drawRec();renderSetup();
+  };
+  mr.start();drawRec();
+}
+function stopRec(){if(!recState)return;clearTimeout(recState.timer);try{recState.mr.stop()}catch(e){}}
+$('vr-list').onclick=e=>{
+  const pl=e.target.closest('[data-vplay]');if(pl){ensureAudio();playClips([pl.dataset.vplay]);return}
+  const rb=e.target.closest('[data-vrec]');if(rb)startRec(rb.dataset.vrec);
+};
+$('b-rec').onclick=()=>{ensureAudio();$('vr-warn').hidden=true;drawRec();openSheet('sh-vrec')};
+$('vr-close').onclick=()=>{stopRec();closeSheet('sh-vrec')};
+$('vr-test').onclick=()=>{ensureAudio();const c='1-2-3-W-2';if(!playClips(c.split('-')))toast('원·투·쓰리·위빙을 먼저 녹음해주세요')};
+loadAllClips();
 const LIM={round:[30,30,600],rest:[15,0,300],rounds:[1,1,20]};
 document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{
   const k=b.dataset.q,[st,mn,mx]=LIM[k],c=cfg();
