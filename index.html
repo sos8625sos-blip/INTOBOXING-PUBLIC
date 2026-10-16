@@ -583,6 +583,23 @@ body.glove #v-timer{touch-action:manipulation}
 .mottos b{color:#ee4a6b;font-weight:900}
 .nav button{font-size:10.5px}
 
+
+/* 앱 설치 */
+.instbar{display:flex;align-items:center;gap:12px;padding:12px 10px 12px 14px;margin:-6px 0 14px;border-radius:20px;background:linear-gradient(120deg,rgba(236,63,96,.2),rgba(236,63,96,.04) 70%),var(--card);border:1px solid rgba(236,63,96,.35)}
+.instbar .ib-ic{width:34px;height:28px;flex:none}
+.instbar .ib-t{flex:1;min-width:0;display:flex;flex-direction:column}
+.instbar .ib-t b{font-size:14px;font-weight:800}
+.instbar .ib-t span{font-size:12px;color:var(--mute)}
+.instbar .pill{height:38px;padding:0 14px;flex:none}
+.instbar .ib-x{width:28px;height:28px;border-radius:9px;color:var(--mute);font-size:18px;flex:none}
+.instcard .pill{align-self:flex-start}
+.instcard{display:flex;flex-direction:column}
+.isteps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;counter-reset:st}
+.isteps li{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:16px;background:rgba(0,0,0,.28);border:1px solid var(--line);font-size:15px;line-height:1.5;counter-increment:st}
+.isteps li::before{content:counter(st);flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--red);color:#fff;font-family:var(--f-num);font-weight:700;font-size:15px}
+.isteps b{color:var(--ink)}
+.isteps .k{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 6px;border-radius:7px;background:rgba(255,255,255,.12);font-weight:800;font-size:13px;vertical-align:middle}
+
 /* 시작 화면 */
 .splash{position:fixed;inset:0;z-index:100000;background:#09090b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:24px max(24px,env(safe-area-inset-right,0px)) 24px max(24px,env(safe-area-inset-left,0px));overflow:hidden;cursor:pointer;transition:opacity .7s ease,visibility .7s}
 .splash.out{opacity:0;visibility:hidden}
@@ -635,6 +652,12 @@ body.glove #v-timer{touch-action:manipulation}
     <h1 class="brand"><svg class="bmark" viewBox="0 0 120 100" aria-hidden="true"><use href="#ib-mark"/></svg><span class="bword">INTO BOXING</span></h1>
     <div class="today" id="todaychip"></div>
   </header>
+  <div class="instbar" id="instbar" hidden>
+    <svg class="ib-ic" viewBox="0 0 120 100" aria-hidden="true"><use href="#ib-mark"/></svg>
+    <div class="ib-t"><b>INTO BOXING을 앱으로 설치</b><span id="instbar-sub">홈 화면에서 바로 열고, 인터넷 없이도 써요</span></div>
+    <button class="pill" id="instbar-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>설치</button>
+    <button class="ib-x" id="instbar-x" aria-label="닫기">×</button>
+  </div>
 
   <!-- ===== 타이머 ===== -->
   <section class="view" id="v-timer">
@@ -876,6 +899,12 @@ body.glove #v-timer{touch-action:manipulation}
       <span class="ar">›</span>
     </a>
 
+    <div class="card instcard" id="instcard">
+      <div class="card-h"><h3>앱으로 설치하기</h3><span class="eyebrow">Home screen</span></div>
+      <p class="muted" style="margin:-6px 0 14px;font-size:14px" id="instcard-t">홈 화면에 체육관 마크 아이콘이 생기고, 앱처럼 전체 화면으로 열려요. 한 번 열어두면 체육관에 인터넷이 안 돼도 써요.</p>
+      <button class="pill" id="instcard-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>홈 화면에 추가</button>
+    </div>
+
     <div class="mottos">
       <p><b>I</b>ntensify <b>N</b>ow <b>T</b>ake <b>O</b>ver</p>
       <p><b>I</b>magine <b>N</b>ew <b>T</b>rails <b>O</b>pening</p>
@@ -1032,6 +1061,17 @@ body.glove #v-timer{touch-action:manipulation}
       <button class="btn" id="vr-test">콤비로 들어보기</button>
       <button class="btn main" id="vr-close">완료</button>
     </div>
+  </div>
+</div>
+
+<!-- 설치 안내 시트 -->
+<div class="sheetwrap" id="sh-inst" hidden>
+  <div class="sheet" role="dialog" aria-labelledby="in-h">
+    <div class="grab"></div>
+    <h3 id="in-h">홈 화면에 추가하기</h3>
+    <p class="muted" style="margin:-6px 0 0;font-size:14px" id="in-sub"></p>
+    <ol class="isteps" id="in-steps"></ol>
+    <div class="acts" id="in-acts"><button class="btn main" id="in-close">확인</button></div>
   </div>
 </div>
 
@@ -2337,6 +2377,68 @@ function copyText(txt,okMsg){
 $('gym-copy').onclick=()=>copyText('0507-1310-8656','전화번호를 복사했어요');
 $('gym-addr-copy').onclick=()=>copyText('세종 다정중앙로 40 404, 405호','주소를 복사했어요');
 setInterval(()=>{if(!$('v-gym').hidden)renderGym()},60000);
+
+
+/* ---------- 앱 설치 (홈 화면에 추가) ---------- */
+(function(){
+  const ua=navigator.userAgent||'';
+  const standalone=()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}};
+  const isIOS=/iphone|ipad|ipod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const inApp=/KAKAOTALK/i.test(ua)?'kakao':/NAVER\(inapp|NAVER/i.test(ua)?'naver':/Instagram/i.test(ua)?'insta':/FBAN|FBAV|Line\//i.test(ua)?'other':'';
+  const samsung=/SamsungBrowser/i.test(ua);
+  const isAndroid=/android/i.test(ua);
+  let deferred=null;
+  const KEY='ib-inst-hide';
+  const hiddenUntil=()=>{try{return +localStorage.getItem(KEY)||0}catch(e){return 0}};
+  function refresh(){
+    const done=standalone();
+    $('instcard').hidden=done;
+    $('instbar').hidden=done||Date.now()<hiddenUntil();
+    if(inApp)$('instbar-sub').textContent='지금은 다른 앱 안에서 열려 있어요. 눌러서 방법을 확인하세요';
+  }
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;refresh()});
+  window.addEventListener('appinstalled',()=>{deferred=null;toast('설치했어요. 홈 화면에서 INTO BOXING을 열어보세요');refresh()});
+  function steps(){
+    const url=location.href.split('#')[0];
+    if(inApp==='kakao')return{sub:'카카오톡 안에서는 홈 화면에 추가할 수 없어요. 먼저 인터넷 앱으로 열어주세요.',list:[
+      '아래 <b>크롬·사파리로 열기</b>를 누르거나, 화면 오른쪽 아래(또는 위) <span class="k">⋮</span> 메뉴에서 <b>다른 브라우저로 열기</b>를 고르세요.',
+      '열린 브라우저에서 다시 <b>체육관 탭 › 홈 화면에 추가</b>를 누르세요.'],ext:'kakaotalk://web/openExternal?url='+encodeURIComponent(url)};
+    if(inApp)return{sub:'지금은 다른 앱 안에서 열려 있어요. 홈 화면에 추가하려면 인터넷 앱으로 열어야 해요.',list:[
+      `화면의 <span class="k">⋮</span> 또는 <span class="k">···</span> 메뉴에서 <b>${isIOS?'Safari로 열기':'다른 브라우저로 열기 / 기본 브라우저로 열기'}</b>를 고르세요.`,
+      '열린 브라우저에서 다시 <b>체육관 탭 › 홈 화면에 추가</b>를 누르세요.']};
+    if(isIOS)return{sub:'아이폰은 Safari에서만 홈 화면에 추가할 수 있어요.',list:[
+      '화면 아래(또는 위)의 <b>공유 버튼</b> <span class="k">⬆</span> 을 누르세요.',
+      '목록을 내려서 <b>홈 화면에 추가</b>를 누르세요.',
+      '오른쪽 위 <b>추가</b>를 누르면 끝! 홈 화면의 INTO BOXING 아이콘으로 여세요.']};
+    if(samsung)return{sub:'삼성 인터넷에서 추가하는 방법이에요.',list:[
+      '화면 아래 <span class="k">≡</span> 메뉴를 누르세요.',
+      '<b>현재 페이지 추가</b> › <b>홈 화면</b>을 고르세요. (메뉴에 <b>앱 설치</b>가 보이면 그걸 눌러도 돼요)',
+      '<b>추가</b>를 누르면 홈 화면에 INTO BOXING 아이콘이 생겨요.']};
+    if(isAndroid)return{sub:'크롬에서 추가하는 방법이에요.',list:[
+      '오른쪽 위 <span class="k">⋮</span> 메뉴를 누르세요.',
+      '<b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 누르세요.',
+      '<b>설치</b>를 누르면 홈 화면에 INTO BOXING 아이콘이 생겨요.']};
+    return{sub:'휴대폰에서 이 주소를 열면 앱처럼 설치할 수 있어요. 컴퓨터 크롬·엣지에서는 주소창 오른쪽의 설치 아이콘을 누르세요.',list:[
+      '휴대폰 크롬(아이폰은 Safari)에서 <b>intoboxing.vercel.app</b>을 여세요.',
+      '체육관 탭의 <b>홈 화면에 추가</b>를 누르고 안내를 따라 하세요.']};
+  }
+  async function install(){
+    if(deferred){
+      deferred.prompt();
+      try{const r=await deferred.userChoice;if(r&&r.outcome==='accepted')toast('설치하는 중이에요')}catch(e){}
+      deferred=null;refresh();return;
+    }
+    const g=steps();
+    $('in-sub').textContent=g.sub;
+    $('in-steps').innerHTML=g.list.map(x=>`<li><span>${x}</span></li>`).join('');
+    $('in-acts').innerHTML=(g.ext?`<a class="btn" href="${g.ext}" style="display:inline-flex;align-items:center;text-decoration:none;color:var(--ink)">크롬·사파리로 열기</a>`:'')+'<button class="btn main" id="in-close">확인</button>';
+    $('in-close').onclick=()=>closeSheet('sh-inst');
+    openSheet('sh-inst');
+  }
+  $('instbar-go').onclick=install;$('instcard-go').onclick=install;
+  $('instbar-x').onclick=()=>{try{localStorage.setItem(KEY,String(Date.now()+7*864e5))}catch(e){}$('instbar').hidden=true;toast('체육관 탭에서 언제든 설치할 수 있어요')};
+  refresh();
+})();
 
 /* ---------- 백업 ---------- */
 $('b-backup').onclick=()=>{$('bk-text').value='';resetDel('bk-restore');$('bk-restore').textContent='붙여넣은 코드로 복원';openSheet('sh-bk')};
