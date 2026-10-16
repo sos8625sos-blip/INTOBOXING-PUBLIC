@@ -2642,7 +2642,7 @@ $('bk-restore').onclick=e=>{
 
 /* ---------- 공지 ----------
    공지를 바꾸려면 아래 목록만 고치면 돼요. until 날짜가 지나면 자동으로 사라져요. */
-const NOTICES=[
+let NOTICES=[
   {id:'n-launch',kind:'안내',text:'INTO BOXING 앱이 새로 열렸어요',sub:'기록 탭 아래 "데이터 백업"에서 카톡으로 백업해두면 휴대폰을 바꿔도 안전해요',until:'2026-11-30'}
 ];
 function renderNotice(){
@@ -2656,6 +2656,17 @@ function renderNotice(){
   el.querySelector('button').onclick=()=>{closed.push(n.id);try{localStorage.setItem('ib-notice-x',JSON.stringify(closed))}catch(e){}el.hidden=true;window.dispatchEvent(new Event('ib-notice-closed'))};
 }
 renderNotice();renderBackupBtn();window.dispatchEvent(new Event('ib-notice-closed'));
+/* GitHub의 notices.json을 읽어와 공지를 바꿔요 (인터넷이 없으면 마지막에 받은 공지를 그대로 써요) */
+(async()=>{
+  try{
+    const r=await fetch('notices.json',{cache:'no-store'});if(!r.ok)return;
+    const j=await r.json(),list=Array.isArray(j)?j:(j&&Array.isArray(j.notices)?j.notices:null);if(!list)return;
+    const str=v=>typeof v==='string'?v.slice(0,200):'';
+    const okDate=v=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)?v:'';
+    NOTICES=list.filter(n=>n&&typeof n.text==='string'&&n.text.trim()).slice(0,10).map((n,i)=>({id:str(n.id)||('n'+i+'-'+str(n.text).slice(0,20)),kind:str(n.kind)||'공지',text:str(n.text),sub:str(n.sub),from:okDate(n.from),until:okDate(n.until)}));
+    renderNotice();window.dispatchEvent(new Event('ib-notice-closed'));
+  }catch(e){}
+})();
 window.addEventListener('resize',()=>{if(S.combo)renderCombo()});
 
 /* ---------- 탭 ---------- */
