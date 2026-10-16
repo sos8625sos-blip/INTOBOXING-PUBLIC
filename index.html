@@ -593,6 +593,8 @@ body.glove #v-timer{touch-action:manipulation}
 
 
 /* 앱 설치 */
+.isafe{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:14px;background:rgba(51,196,122,.1);border:1px solid rgba(51,196,122,.3);font-size:13px;color:var(--mute)}
+.isafe b{color:#7fe0ad;font-size:14px}
 .instbar{display:flex;align-items:center;gap:12px;padding:12px 10px 12px 14px;margin:-6px 0 14px;border-radius:20px;background:linear-gradient(120deg,rgba(236,63,96,.2),rgba(236,63,96,.04) 70%),var(--card);border:1px solid rgba(236,63,96,.35)}
 .instbar .ib-ic{width:34px;height:28px;flex:none}
 .instbar .ib-t{flex:1;min-width:0;display:flex;flex-direction:column}
@@ -685,8 +687,8 @@ body.glove #v-timer{touch-action:manipulation}
   </header>
   <div class="instbar" id="instbar" hidden>
     <svg class="ib-ic" viewBox="0 0 120 100" aria-hidden="true"><use href="#ib-mark"/></svg>
-    <div class="ib-t"><b>앱으로 설치하기</b><span id="instbar-sub">홈 화면에서 바로 열기</span></div>
-    <button class="pill" id="instbar-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>설치</button>
+    <div class="ib-t"><b>홈 화면에 바로가기</b><span id="instbar-sub">크롬·사파리에서 아이콘만 추가</span></div>
+    <button class="pill" id="instbar-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>추가</button>
     <button class="ib-x" id="instbar-x" aria-label="닫기">×</button>
   </div>
 
@@ -944,9 +946,9 @@ body.glove #v-timer{touch-action:manipulation}
     </div>
 
     <div class="card instcard" id="instcard">
-      <div class="card-h"><h3>앱으로 설치하기</h3><span class="eyebrow">Home screen</span></div>
-      <p class="muted" style="margin:-6px 0 14px;font-size:14px" id="instcard-t">홈 화면에 체육관 마크 아이콘이 생기고, 앱처럼 전체 화면으로 열려요. 한 번 열어두면 체육관에 인터넷이 안 돼도 써요.</p>
-      <button class="pill" id="instcard-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>홈 화면에 추가</button>
+      <div class="card-h"><h3>홈 화면에 바로가기 추가</h3><span class="eyebrow">Home screen</span></div>
+      <p class="muted" style="margin:-6px 0 14px;font-size:14px" id="instcard-t">앱스토어에서 받는 앱이 아니에요. 쓰고 있는 인터넷(크롬·삼성 인터넷·사파리)에서 이 페이지를 홈 화면 아이콘으로 꺼내두는 거라 따로 권한을 묻지 않아요. 지우고 싶으면 아이콘을 길게 눌러 삭제하면 끝이에요.</p>
+      <button class="pill" id="instcard-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>홈 화면에 추가하는 방법</button>
     </div>
 
     <div class="mottos">
@@ -1113,7 +1115,8 @@ body.glove #v-timer{touch-action:manipulation}
 <div class="sheetwrap" id="sh-inst" hidden>
   <div class="sheet" role="dialog" aria-labelledby="in-h">
     <div class="grab"></div>
-    <h3 id="in-h">홈 화면에 추가하기</h3>
+    <h3 id="in-h">홈 화면에 바로가기 추가</h3>
+    <div class="isafe"><b>안심하세요</b><span>앱스토어 설치가 아니라 인터넷 즐겨찾기처럼 아이콘만 만드는 거예요 · 권한 요청 없음 · 아이콘을 길게 눌러 언제든 삭제</span></div>
     <p class="muted" style="margin:-6px 0 0;font-size:14px" id="in-sub"></p>
     <ol class="isteps" id="in-steps"></ol>
     <div class="acts" id="in-acts"><button class="btn main" id="in-close">확인</button></div>
@@ -2506,7 +2509,7 @@ setInterval(()=>{if(!$('v-gym').hidden)renderGym()},60000);
     if(inApp)$('instbar-sub').textContent='지금은 다른 앱 안에서 열려 있어요. 눌러서 방법을 확인하세요';
   }
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;refresh()});
-  window.addEventListener('appinstalled',()=>{deferred=null;toast('설치했어요. 홈 화면에서 INTO BOXING을 열어보세요');refresh()});
+  window.addEventListener('appinstalled',()=>{deferred=null;toast('홈 화면에 추가했어요. 체육관 마크 아이콘으로 열어보세요');refresh()});
   function steps(){
     const url=location.href.split('#')[0];
     if(inApp==='kakao')return{sub:'카카오톡 안에서는 홈 화면에 추가할 수 없어요. 먼저 인터넷 앱으로 열어주세요.',list:[
@@ -2521,31 +2524,35 @@ setInterval(()=>{if(!$('v-gym').hidden)renderGym()},60000);
       '오른쪽 위 <b>추가</b>를 누르면 끝! 홈 화면의 INTO BOXING 아이콘으로 여세요.']};
     if(samsung)return{sub:'삼성 인터넷에서 추가하는 방법이에요.',list:[
       '화면 아래 <span class="k">≡</span> 메뉴를 누르세요.',
-      '<b>현재 페이지 추가</b> › <b>홈 화면</b>을 고르세요. (메뉴에 <b>앱 설치</b>가 보이면 그걸 눌러도 돼요)',
+      '<b>현재 페이지 추가</b> › <b>홈 화면</b>을 고르세요. (메뉴에 <b>앱 설치</b>라고 보여도 같은 기능이에요. 앱스토어 설치가 아니에요)',
       '<b>추가</b>를 누르면 홈 화면에 INTO BOXING 아이콘이 생겨요.']};
     if(isAndroid)return{sub:'크롬에서 추가하는 방법이에요.',list:[
       '오른쪽 위 <span class="k">⋮</span> 메뉴를 누르세요.',
-      '<b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 누르세요.',
-      '<b>설치</b>를 누르면 홈 화면에 INTO BOXING 아이콘이 생겨요.']};
+      '<b>홈 화면에 추가</b>를 누르세요. (크롬 버전에 따라 <b>앱 설치</b>라고 보여도 같은 기능이에요. 앱스토어 설치가 아니에요)',
+      '<b>추가</b>(또는 설치)를 누르면 홈 화면에 INTO BOXING 아이콘이 생겨요.']};
     return{sub:'휴대폰에서 이 주소를 열면 앱처럼 설치할 수 있어요. 컴퓨터 크롬·엣지에서는 주소창 오른쪽의 설치 아이콘을 누르세요.',list:[
       '휴대폰 크롬(아이폰은 Safari)에서 <b>intoboxing.vercel.app</b>을 여세요.',
       '체육관 탭의 <b>홈 화면에 추가</b>를 누르고 안내를 따라 하세요.']};
   }
-  async function install(){
-    if(deferred){
-      deferred.prompt();
-      try{const r=await deferred.userChoice;if(r&&r.outcome==='accepted')toast('설치하는 중이에요')}catch(e){}
-      deferred=null;refresh();return;
-    }
+  async function quick(){
+    if(!deferred)return;closeSheet('sh-inst');
+    deferred.prompt();
+    try{const r=await deferred.userChoice;if(r&&r.outcome==='accepted')toast('홈 화면에 추가하는 중이에요')}catch(e){}
+    deferred=null;refresh();
+  }
+  function install(){
     const g=steps();
     $('in-sub').textContent=g.sub;
     $('in-steps').innerHTML=g.list.map(x=>`<li><span>${x}</span></li>`).join('');
-    $('in-acts').innerHTML=(g.ext?`<a class="btn" href="${g.ext}" style="display:inline-flex;align-items:center;text-decoration:none;color:var(--ink)">크롬·사파리로 열기</a>`:'')+'<button class="btn main" id="in-close">확인</button>';
+    $('in-acts').innerHTML=(g.ext?`<a class="btn" href="${g.ext}" style="display:inline-flex;align-items:center;text-decoration:none;color:var(--ink)">크롬·사파리로 열기</a>`:'')
+      +(deferred&&!inApp?'<button class="btn" id="in-quick">한 번에 추가</button>':'')
+      +'<button class="btn main" id="in-close">확인</button>';
     $('in-close').onclick=()=>closeSheet('sh-inst');
+    if($('in-quick'))$('in-quick').onclick=quick;
     openSheet('sh-inst');
   }
   $('instbar-go').onclick=install;$('instcard-go').onclick=install;
-  $('instbar-x').onclick=()=>{try{localStorage.setItem(KEY,String(Date.now()+7*864e5))}catch(e){}$('instbar').hidden=true;toast('체육관 탭에서 언제든 설치할 수 있어요')};
+  $('instbar-x').onclick=()=>{try{localStorage.setItem(KEY,String(Date.now()+7*864e5))}catch(e){}$('instbar').hidden=true;toast('체육관 탭에서 언제든 추가할 수 있어요')};
   refresh();
 })();
 
