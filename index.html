@@ -607,6 +607,16 @@ body.glove #v-timer{touch-action:manipulation}
 .isteps b{color:var(--ink)}
 .isteps .k{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 6px;border-radius:7px;background:rgba(255,255,255,.12);font-weight:800;font-size:13px;vertical-align:middle}
 
+/* 코치 라인업 */
+.staff{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.st{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:rgba(0,0,0,.25);border:1px solid var(--line);min-width:0}
+.st .av{width:42px;height:42px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:800;font-size:17px;background:rgba(255,255,255,.08);color:var(--ink);border:1.5px solid var(--line-2)}
+.st.head .av{background:linear-gradient(150deg,#f26582,var(--red-deep));border-color:transparent;color:#fff;box-shadow:0 8px 18px -10px var(--red)}
+.st .sn{min-width:0;display:flex;flex-direction:column}
+.st .sn b{font-size:16px;font-weight:800;white-space:nowrap}
+.st .sn small{font-size:12px;font-weight:700;color:var(--mute)}
+.st.head .sn small{color:#ff8a9e}
+
 /* 시작 화면 */
 .splash{position:fixed;inset:0;z-index:100000;background:#09090b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:24px max(24px,env(safe-area-inset-right,0px)) 24px max(24px,env(safe-area-inset-left,0px));overflow:hidden;cursor:pointer;transition:opacity .7s ease,visibility .7s}
 .splash.out{opacity:0;visibility:hidden}
@@ -858,6 +868,16 @@ body.glove #v-timer{touch-action:manipulation}
           전화 걸기
         </a>
         <button class="pill ghost" id="gym-copy">번호 복사</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h3>코치 라인업</h3><span class="eyebrow">Coaches</span></div>
+      <div class="staff">
+        <div class="st head"><span class="av">김</span><span class="sn"><b>김동협</b><small>관장</small></span></div>
+        <div class="st"><span class="av">김</span><span class="sn"><b>김제홍</b><small>부관장</small></span></div>
+        <div class="st"><span class="av">이</span><span class="sn"><b>이은규</b><small>코치</small></span></div>
+        <div class="st"><span class="av">한</span><span class="sn"><b>한동진</b><small>코치</small></span></div>
       </div>
     </div>
 
