@@ -2482,7 +2482,7 @@ const BRANCHES={
   gongju:{tab:'공주 신관점',eb:'Gongju · Singwan',name:'인투복싱 공주신관점',who:'관장 김동협',phone:'0507-1306-8656',
     hours:Object.assign(WK([[870,1320]]),{6:[],0:[]}),breaks:[[1110,1140]],brkText:'평일 휴게시간 18:30–19:00 · 주말 휴무',
     addr:['충남 공주시 한적1길 2, 2층 201호','신관초 사거리 중앙교회 맞은편 건물 2층'],addrCopy:'충남 공주시 한적1길 2 2층 201호',
-    q:'인투복싱 공주신관점',feat:['검증된 시스템','오픈 1년 회원 420명','링 · 샌드백'],staff:true}
+    q:'인투복싱 공주신관점',feat:['주차 가능','남·녀 화장실 구분','단체 이용 가능','링 · 샌드백','물 · 수건 제공'],staff:true}
 };
 const GB=()=>BRANCHES[cfg().branch]||BRANCHES.sejong;
 const hhmm=m=>`${pad(Math.floor(m/60))}:${pad(m%60)}`;
@@ -2525,7 +2525,7 @@ function renderGym(){
   $('gym-nmap').href='https://map.naver.com/p/search/'+encodeURIComponent(B.q);
   $('gym-kmap').href='https://map.kakao.com/?q='+encodeURIComponent(B.q);
   $('gym-navi').textContent=`내비게이션(네이버·T맵·카카오내비)에서 "${B.q}"으로 검색하면 바로 찾아가요`;
-  $('gym-feat-h').textContent=cfg().branch==='gongju'?'특징':'시설 · 편의';
+  $('gym-feat-h').textContent='시설 · 편의';
   $('gym-feat').innerHTML=B.feat.map(f=>`<span class="tchip">${f}</span>`).join('');
 }
 $('seg-branch').onclick=e=>{const b=e.target.closest('[data-b]');if(!b)return;cfg().branch=b.dataset.b;save();renderGym()};
