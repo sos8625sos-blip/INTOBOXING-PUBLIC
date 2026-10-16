@@ -541,7 +541,8 @@ body.glove #v-timer{touch-action:manipulation}
 .gymhero>*{position:relative}
 .gh-mark{width:64px;height:54px;flex:none;filter:drop-shadow(0 8px 18px rgba(0,0,0,.55))}
 .gh-t{min-width:0;display:flex;flex-direction:column;gap:4px}
-.gh-t h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:30px;text-shadow:0 2px 12px rgba(0,0,0,.4)}
+.gh-t h2 .br{display:block;font-family:var(--f-body);font-weight:800;font-size:15px;margin-top:2px;opacity:.9}
+.gh-t h2{margin:0;line-height:1.15;font-family:var(--f-display);font-weight:400;font-size:30px;text-shadow:0 2px 12px rgba(0,0,0,.4)}
 .gh-t .eyebrow{color:rgba(255,255,255,.75)}
 .gh-status{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;padding:4px 11px;border-radius:99px;background:rgba(0,0,0,.55);font-size:13px;font-weight:800}
 .gh-status i{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
@@ -860,11 +861,12 @@ body.glove #v-timer{touch-action:manipulation}
 
   <!-- ===== 체육관 ===== -->
   <section class="view" id="v-gym" hidden>
+    <div class="seg" id="seg-branch"></div>
     <div class="gymhero">
       <svg class="gh-mark" viewBox="0 0 120 100" aria-hidden="true"><use href="#ib-mark"/></svg>
       <div class="gh-t">
-        <span class="eyebrow">Sejong · Dajeong-dong</span>
-        <h2>인투복싱</h2>
+        <span class="eyebrow" id="gym-eb">Sejong · Dajeong-dong</span>
+        <h2 id="gym-name">인투복싱</h2>
         <div class="gh-status" id="gym-status"></div>
       </div>
     </div>
@@ -872,11 +874,11 @@ body.glove #v-timer{touch-action:manipulation}
     <div class="card callcard">
       <div class="cc-who">
         <span class="eyebrow">상담 문의</span>
-        <b>관장 김동협</b>
+        <b id="gym-who">관장 김동협</b>
         <span class="cc-num" id="gym-num">0507-1310-8656</span>
       </div>
       <div class="cc-acts">
-        <a class="callbtn" href="tel:050713108656" aria-label="관장 김동협에게 전화 걸기">
+        <a class="callbtn" id="gym-call" href="tel:050713108656" aria-label="전화 걸기">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg>
           전화 걸기
         </a>
@@ -884,7 +886,7 @@ body.glove #v-timer{touch-action:manipulation}
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" id="gym-staff">
       <div class="card-h"><h3>코치 라인업</h3><span class="eyebrow">Coaches</span></div>
       <div class="staff">
         <div class="st head"><span class="av">김</span><span class="sn"><b>김동협</b><small>관장</small></span></div>
@@ -897,7 +899,7 @@ body.glove #v-timer{touch-action:manipulation}
     <div class="card">
       <div class="card-h"><h3>운영 시간</h3><span class="eyebrow">Hours</span></div>
       <div class="hours" id="gym-hours"></div>
-      <p class="muted" style="margin:12px 0 0;font-size:12px">평일 휴게시간 11:30–14:30 · 18:30–19:00</p>
+      <p class="muted" style="margin:12px 0 0;font-size:12px" id="gym-brk"></p>
     </div>
 
     <div class="card">
@@ -909,28 +911,18 @@ body.glove #v-timer{touch-action:manipulation}
 
     <div class="card">
       <div class="card-h"><h3>오시는 길</h3><span class="eyebrow">Location</span></div>
-      <div class="addr">
-        <b>세종 다정중앙로 40, 404·405호</b>
-        <span>다정동 중앙상가 파리바게트 건물 4층</span>
-        <span>다정동 복합커뮤니티센터에서 걸어서 1분</span>
-      </div>
+      <div class="addr" id="gym-addr"></div>
       <div class="maps">
-        <a class="pill ghost" href="https://map.naver.com/p/search/%EC%9D%B8%ED%88%AC%EB%B3%B5%EC%8B%B1" target="_blank" rel="noopener">네이버 지도</a>
-        <a class="pill ghost" href="https://map.kakao.com/?q=%EC%9D%B8%ED%88%AC%EB%B3%B5%EC%8B%B1" target="_blank" rel="noopener">카카오맵</a>
+        <a class="pill ghost" id="gym-nmap" href="#" target="_blank" rel="noopener">네이버 지도</a>
+        <a class="pill ghost" id="gym-kmap" href="#" target="_blank" rel="noopener">카카오맵</a>
         <button class="pill ghost" id="gym-addr-copy">주소 복사</button>
       </div>
-      <p class="muted" style="margin:12px 0 0;font-size:12px">내비게이션(네이버·T맵·카카오내비)에서 "인투복싱"으로 검색하면 바로 찾아가요</p>
+      <p class="muted" style="margin:12px 0 0;font-size:12px" id="gym-navi"></p>
     </div>
 
     <div class="card">
-      <div class="card-h"><h3>시설 · 편의</h3></div>
-      <div class="tchips">
-        <span class="tchip">주차 가능</span>
-        <span class="tchip">남·녀 화장실 구분</span>
-        <span class="tchip">단체 이용 가능</span>
-        <span class="tchip">링 · 샌드백</span>
-        <span class="tchip">물 · 수건 제공</span>
-      </div>
+      <div class="card-h"><h3 id="gym-feat-h">시설 · 편의</h3></div>
+      <div class="tchips" id="gym-feat"></div>
     </div>
 
     <div class="card">
@@ -1244,7 +1236,7 @@ function load(){
       notes:[],weights:[]
     };
   }
-  d.cfg=Object.assign({round:180,rest:60,rounds:3,prep:10,combo:'mid',call:'num',voice:true,warn:true,preset:'am',goal:3,mode:'preset',routine:null,after:'ask',lens:[1,2,3],mine:'mix',body:'mix',tone:'deep',voiceName:'',stance:'ortho',glove:false,vsrc:'tts'},d.cfg);
+  d.cfg=Object.assign({round:180,rest:60,rounds:3,prep:10,combo:'mid',call:'num',voice:true,warn:true,preset:'am',goal:3,mode:'preset',routine:null,after:'ask',lens:[1,2,3],mine:'mix',body:'mix',tone:'deep',voiceName:'',stance:'ortho',glove:false,vsrc:'tts',branch:'sejong'},d.cfg);
   d.records=(d.records||[]).map(normRec);
   d.notes=d.notes||[];d.weights=d.weights||[];d.events=d.events||[];d.combos=(d.combos||[]).map(x=>({...x,code:x.code.replace(/[1-6]b/g,'Y')})).filter((x,i,a)=>a.findIndex(y=>y.code===x.code)===i);
   if(!d.presets.some(p=>p.id==='rope')&&!d.routines)d.presets.push({...DEFAULT_PRESETS.find(p=>p.id==='rope')});
@@ -2430,44 +2422,69 @@ $('rep-close').onclick=()=>closeSheet('sh-rep');
 
 
 /* ---------- 체육관 ---------- */
-const GYM_HOURS={1:[[570,1440]],2:[[570,1440]],3:[[570,1440]],4:[[570,1440]],5:[[570,1440]],6:[[600,720]],0:[]};
-const GYM_BREAKS=[[690,870],[1110,1140]];
-const hhmm=m=>`${pad(Math.floor(m/60)%24===0&&m>=1440?24:Math.floor(m/60))}:${pad(m%60)}`;
+const WK=(o)=>({1:o,2:o,3:o,4:o,5:o});
+const BRANCHES={
+  sejong:{tab:'세종 다정점',eb:'Sejong · Dajeong-dong',name:'인투복싱',who:'관장 김동협',phone:'0507-1310-8656',
+    hours:Object.assign(WK([[570,1440]]),{6:[[600,720]],0:[]}),breaks:[[690,870],[1110,1140]],brkText:'평일 휴게시간 11:30–14:30 · 18:30–19:00',
+    addr:['세종 다정중앙로 40, 404·405호','다정동 중앙상가 파리바게트 건물 4층','다정동 복합커뮤니티센터에서 걸어서 1분'],addrCopy:'세종 다정중앙로 40 404, 405호',
+    q:'인투복싱',feat:['주차 가능','남·녀 화장실 구분','단체 이용 가능','링 · 샌드백','물 · 수건 제공'],staff:true},
+  gongju:{tab:'공주 신관점',eb:'Gongju · Singwan',name:'인투복싱 공주신관점',who:'공주 신관점 상담',phone:'0507-1306-8656',
+    hours:Object.assign(WK([[870,1320]]),{6:[],0:[]}),breaks:[[1110,1140]],brkText:'평일 휴게시간 18:30–19:00 · 주말 휴무',
+    addr:['충남 공주시 한적1길 2, 2층 201호','신관초 사거리 중앙교회 맞은편 건물 2층'],addrCopy:'충남 공주시 한적1길 2 2층 201호',
+    q:'인투복싱 공주신관점',feat:['검증된 시스템','오픈 1년 회원 420명','링 · 샌드백'],staff:false}
+};
+const GB=()=>BRANCHES[cfg().branch]||BRANCHES.sejong;
+const hhmm=m=>`${pad(Math.floor(m/60))}:${pad(m%60)}`;
 function gymStatus(){
-  const n=new Date(),d=n.getDay(),m=n.getHours()*60+n.getMinutes(),open=GYM_HOURS[d];
+  const B=GB(),n=new Date(),d=n.getDay(),m=n.getHours()*60+n.getMinutes(),open=B.hours[d]||[];
   const inOpen=open.find(([a,b])=>m>=a&&m<b);
   if(!inOpen){
-    for(let k=0;k<7;k++){const dd=(d+k)%7,o=GYM_HOURS[dd];if(!o.length)continue;const st=o[0][0];if(k===0&&st<=m)continue;
+    for(let k=0;k<8;k++){const dd=(d+k)%7,o=B.hours[dd]||[];if(!o.length)continue;const st=o[0][0];if(k===0&&st<=m)continue;
       return{cls:'off',txt:`영업 종료 · ${k===0?'오늘':k===1?'내일':WD[dd]+'요일'} ${hhmm(st)} 오픈`}}
     return{cls:'off',txt:'영업 종료'};
   }
-  if(d>=1&&d<=5){const br=GYM_BREAKS.find(([a,b])=>m>=a&&m<b);if(br)return{cls:'brk',txt:`휴게시간 · ${hhmm(br[1])}에 다시 열어요`}}
-  const nb=(d>=1&&d<=5)?GYM_BREAKS.find(([a])=>a>m):null;
+  const wk=d>=1&&d<=5;
+  if(wk){const br=B.breaks.find(([a,b])=>m>=a&&m<b);if(br)return{cls:'brk',txt:`휴게시간 · ${hhmm(br[1])}에 다시 열어요`}}
+  const nb=wk?B.breaks.find(([a])=>a>m&&a<inOpen[1]):null;
   return{cls:'on',txt:nb?`운영 중 · ${hhmm(nb[0])}에 휴게시간`:`운영 중 · ${hhmm(inOpen[1])}까지`};
 }
 const GYM_PRICES={'3':[['주 5회',500000,'월~금 매일'],['주 3회',450000,''],['주 2회',400000,'']],'1':[['주 5회',200000,'월~금 매일'],['주 3회',170000,''],['주 2회',150000,'']]};
 let gymP='3';
 function renderGym(){
+  const B=GB();
+  $('seg-branch').innerHTML=Object.entries(BRANCHES).map(([k,b])=>`<button data-b="${k}" class="${GB()===b?'on':''}">${b.tab}</button>`).join('');
+  $('gym-eb').textContent=B.eb;$('gym-name').innerHTML=`인투복싱<span class="br">${B.tab}</span>`;
   const st=gymStatus();$('gym-status').className='gh-status '+(st.cls==='on'?'':st.cls);$('gym-status').innerHTML=`<i></i>${st.txt}`;
+  $('gym-who').textContent=B.who;$('gym-num').textContent=B.phone;
+  $('gym-call').href='tel:'+B.phone.replace(/-/g,'');$('gym-call').setAttribute('aria-label',`${B.tab}에 전화 걸기`);
+  $('gym-staff').hidden=!B.staff;
   const td=new Date().getDay();
-  const rows=[[1,'월'],[2,'화'],[3,'수'],[4,'목'],[5,'금'],[6,'토'],[0,'일']].map(([d,l])=>{
-    const o=GYM_HOURS[d],now=d===td;
-    if(!o.length)return `<div class="hr off${now?' today':''}"><span class="d">${l}</span><span class="t">정기 휴무</span>${now?'<span class="now">오늘</span>':'<span></span>'}</div>`;
-    return `<div class="hr${now?' today':''}"><span class="d">${l}</span><span class="t">${hhmm(o[0][0])} – ${hhmm(o[0][1])}${d<=5&&d>=1?'<small>휴게 11:30–14:30 · 18:30–19:00</small>':''}</span>${now?'<span class="now">오늘</span>':'<span></span>'}</div>`;
+  $('gym-hours').innerHTML=[[1,'월'],[2,'화'],[3,'수'],[4,'목'],[5,'금'],[6,'토'],[0,'일']].map(([d,l])=>{
+    const o=B.hours[d]||[],now=d===td,tag=now?'<span class="now">오늘</span>':'<span></span>';
+    if(!o.length)return `<div class="hr off${now?' today':''}"><span class="d">${l}</span><span class="t">정기 휴무</span>${tag}</div>`;
+    const brk=d>=1&&d<=5&&B.breaks.length?`<small>휴게 ${B.breaks.map(([a,b])=>hhmm(a)+'–'+hhmm(b)).join(' · ')}</small>`:'';
+    return `<div class="hr${now?' today':''}"><span class="d">${l}</span><span class="t">${hhmm(o[0][0])} – ${hhmm(o[0][1])}${brk}</span>${tag}</div>`;
   }).join('');
-  $('gym-hours').innerHTML=rows;
+  $('gym-brk').textContent=B.brkText;
   $('gym-ptabs').innerHTML=[['3','3개월'],['1','1개월']].map(([v,l])=>`<button data-p="${v}" class="${gymP===v?'on':''}">${l}</button>`).join('');
   $('gym-prices').innerHTML=GYM_PRICES[gymP].map(([n,won,sub],i)=>{
     const per=gymP==='3'?`한 달로 나누면 약 ${(won/3/10000).toFixed(1)}만원`:sub;
     return `<div class="pr${i===0?' best':''}"><div class="pl"><b>${gymP}개월 ${n}</b>${per?`<small>${per}</small>`:''}</div><div class="pv">${(won/10000).toLocaleString()}<small>만원</small></div></div>`}).join('');
+  $('gym-addr').innerHTML=`<b>${B.addr[0]}</b>`+B.addr.slice(1).map(x=>`<span>${x}</span>`).join('');
+  $('gym-nmap').href='https://map.naver.com/p/search/'+encodeURIComponent(B.q);
+  $('gym-kmap').href='https://map.kakao.com/?q='+encodeURIComponent(B.q);
+  $('gym-navi').textContent=`내비게이션(네이버·T맵·카카오내비)에서 "${B.q}"으로 검색하면 바로 찾아가요`;
+  $('gym-feat-h').textContent=B.staff?'시설 · 편의':'특징';
+  $('gym-feat').innerHTML=B.feat.map(f=>`<span class="tchip">${f}</span>`).join('');
 }
+$('seg-branch').onclick=e=>{const b=e.target.closest('[data-b]');if(!b)return;cfg().branch=b.dataset.b;save();renderGym()};
 $('gym-ptabs').onclick=e=>{const b=e.target.closest('[data-p]');if(!b)return;gymP=b.dataset.p;renderGym()};
 function copyText(txt,okMsg){
   const done=()=>toast(okMsg);
   try{navigator.clipboard.writeText(txt).then(done,()=>toast(txt))}catch(e){toast(txt)}
 }
-$('gym-copy').onclick=()=>copyText('0507-1310-8656','전화번호를 복사했어요');
-$('gym-addr-copy').onclick=()=>copyText('세종 다정중앙로 40 404, 405호','주소를 복사했어요');
+$('gym-copy').onclick=()=>copyText(GB().phone,'전화번호를 복사했어요');
+$('gym-addr-copy').onclick=()=>copyText(GB().addrCopy,'주소를 복사했어요');
 setInterval(()=>{if(!$('v-gym').hidden)renderGym()},60000);
 
 
