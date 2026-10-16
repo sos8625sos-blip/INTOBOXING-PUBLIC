@@ -447,7 +447,7 @@ body.glove #v-timer{touch-action:manipulation}
 .pad .lead{background:linear-gradient(160deg,#f26582,var(--red-deep));color:#fff}
 .pad .rear{background:linear-gradient(160deg,#fff,#cfd4e2);color:var(--on-light)}
 .pad .def{background:rgba(62,123,255,.14);border:1.5px solid var(--blue);color:#cfe0ff}
-.pad .bodyk{grid-column:1/-1;flex-direction:row;gap:8px;background:rgba(246,196,69,.14);border:1.5px solid var(--gold);color:var(--gold);font-style:normal;font-family:var(--f-body);font-size:16px;font-weight:800}
+.pad .bodyk{grid-column:span 5;flex-direction:row;gap:8px;background:rgba(246,196,69,.14);border:1.5px solid var(--gold);color:var(--gold);font-style:normal;font-family:var(--f-body);font-size:16px;font-weight:800}
 .pad .bk{background:rgba(255,255,255,.07);color:var(--ink);font-style:normal;font-size:20px}
 .pad button:active{transform:scale(.95)}
 .repbtn{display:flex;align-items:center;gap:14px;width:100%;padding:16px 18px;border-radius:22px;text-align:left;background:linear-gradient(120deg,rgba(236,63,96,.2),rgba(236,63,96,.04) 70%);border:1px solid rgba(236,63,96,.35)}
@@ -923,6 +923,7 @@ body.glove #v-timer{touch-action:manipulation}
           <li>턱은 당기고, 시선은 상대(샌드백) 가슴께</li>
           <li>펀치가 끝날 때 숨을 짧게 "슉" 내뱉기</li>
           <li>위빙·더킹은 허리가 아니라 무릎으로 내려가기</li>
+          <li>블로킹은 막고 끝내지 말고 바로 받아치기</li>
           <li>휴식 1분: 코로 길게 들이쉬고 어깨 털기</li>
         </ul>
       </div>
@@ -1268,7 +1269,7 @@ function speak(text,force){
 const hush=()=>{try{speechSynthesis.cancel()}catch(e){}stopClips()};
 
 /* ---------- 녹음한 목소리 ---------- */
-const REC_WORDS=[['1','원'],['2','투'],['3','쓰리'],['4','포'],['5','파이브'],['6','식스'],['S','슬립'],['D','더킹'],['W','위빙'],['P','패리'],['B','백스텝'],['BD','바디']];
+const REC_WORDS=[['1','원'],['2','투'],['3','쓰리'],['4','포'],['5','파이브'],['6','식스'],['S','슬립'],['D','더킹'],['W','위빙'],['P','패리'],['B','백스텝'],['G','블록'],['BD','바디']];
 const CLIP={};let clipNodes=[],vbus=null;
 const VDB={db:null,
   open(){return new Promise((res,rej)=>{if(this.db)return res(this.db);let r;try{r=indexedDB.open('ib-voice',1)}catch(e){return rej(e)}r.onupgradeneeded=()=>r.result.createObjectStore('clips');r.onsuccess=()=>{this.db=r.result;res(this.db)};r.onerror=()=>rej(r.error)})},
@@ -1311,9 +1312,9 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 /* ---------- 콤비 ---------- */
 const isSouth=()=>cfg().stance==='south';
 const LR=()=>isSouth()?['라이트','레프트']:['레프트','라이트'];
-const SHORT={1:'잽',2:'스트레이트',3:'훅',4:'훅',5:'어퍼',6:'어퍼',S:'슬립',D:'더킹',W:'위빙',P:'패리',B:'백스텝'};
-const SAY_NUM={1:'원',2:'투',3:'쓰리',4:'포',5:'파이브',6:'식스',S:'슬립',D:'더킹',W:'위빙',P:'패리',B:'백스텝'};
-const SAY_BASE={1:'잽',2:'스트레이트',3:'훅',5:'어퍼',S:'슬립',D:'더킹',W:'위빙',P:'패리',B:'백스텝'};
+const SHORT={1:'잽',2:'스트레이트',3:'훅',4:'훅',5:'어퍼',6:'어퍼',S:'슬립',D:'더킹',W:'위빙',P:'패리',B:'백스텝',G:'블로킹'};
+const SAY_NUM={1:'원',2:'투',3:'쓰리',4:'포',5:'파이브',6:'식스',S:'슬립',D:'더킹',W:'위빙',P:'패리',B:'백스텝',G:'블록'};
+const SAY_BASE={1:'잽',2:'스트레이트',3:'훅',5:'어퍼',S:'슬립',D:'더킹',W:'위빙',P:'패리',B:'백스텝',G:'블록'};
 const isBody=t=>t==='Y';
 const base=t=>t;
 const isPunch=t=>isBody(t)||!isNaN(t);
@@ -1331,20 +1332,37 @@ const LEVELS={
 /* 실전에서 많이 쓰는 콤비만 추림
    원칙: 앞손·뒷손이 번갈아 나가게(더블 잽 1-1, 잽-훅 1-3만 예외) / 바디는 콤비당 한 번
    / 바디는 보통 머리 공격으로 이어 올리기(바디→3) / 방어는 공격 직후나 카운터 직전에 한 번 */
+/* 실전에서 많이 쓰는 콤비 (흐름별)
+   원칙: 앞손·뒷손이 번갈아 나가게(더블 잽 1-1, 잽-훅 1-3만 예외) / 바디는 콤비당 한 번, 보통 머리로 이어 올리기
+   / 방어는 콤비당 한 번: 먼저 막고·피하고 받아치거나(카운터), 치고 나서 빠지거나(공격 후 방어) */
 const COMBOS=[
-  // 단타 (+ 방어 후 받아치기)
-  '1','2','3','Y',
-  'S-2','S-1','S-Y','W-3','W-2','P-2','D-Y','D-3','B-2',
-  // 2연타
-  '1-1','1-2','1-3','2-3','3-2','1-6','6-3','5-2','2-5','3-6','1-Y','Y-3',
-  '1-2-S','1-2-W','1-2-B','1-2-D','S-2-3','S-2-Y','W-3-2','P-2-3','D-Y-3','B-2-3',
-  // 3연타
-  '1-2-3','1-1-2','1-2-1','1-2-Y','1-3-2','2-3-2','3-2-3','1-6-3','6-3-2','5-2-3','2-3-6','3-6-3','1-1-Y','1-Y-3','Y-3-2','2-3-Y',
-  '1-2-3-W','1-2-3-B','1-2-3-S','1-2-S-2','1-2-W-3','S-2-3-2','W-3-2-3','P-2-3-2','D-Y-3-2','B-2-3-2',
-  // 4연타 이상
-  '1-2-3-2','1-2-1-2','1-6-3-2','1-1-2-3','1-2-Y-3','1-2-5-2','1-2-3-6','5-2-3-2','2-3-2-3','1-1-2-3-2','1-2-Y-3-2','1-2-3-2-3',
-  '1-2-3-2-W','1-2-3-2-B','1-2-S-2-3','1-2-W-2-3','1-2-3-W-3-2','1-6-3-2-W'
+  // 기본 연결
+  '1','2','3','1-1','1-2','1-3','2-3','3-2','1-2-3','1-1-2','1-2-1','1-3-2','2-3-2','3-2-3',
+  '1-2-3-2','1-2-1-2','1-1-2-3','2-3-2-3','1-1-2-3-2','1-2-3-2-3',
+  // 바디
+  'Y','1-Y','Y-3','1-2-Y','1-1-Y','1-Y-3','Y-3-2','2-3-Y','1-2-Y-3','1-2-Y-3-2',
+  // 인파이팅 (어퍼 섞기)
+  '1-6','6-3','5-2','2-5','3-6','1-6-3','6-3-2','5-2-3','2-3-6','3-6-3','1-6-3-2','1-2-5-2','1-2-3-6','5-2-3-2',
+  // 카운터: 막고·피하고 바로 받아치기
+  'G-2','G-3','G-1-2','G-2-3','G-Y-3','G-3-2','G-1-2-3',
+  'S-2','S-1','S-Y','S-2-3','S-2-Y','S-2-3-2',
+  'W-3','W-2','W-3-2','W-3-2-3',
+  'P-2','P-2-3','P-2-3-2',
+  'D-Y','D-3','D-Y-3','D-Y-3-2',
+  'B-2','B-2-3','B-2-3-2',
+  // 공격 후 방어: 치고 막거나 빠지기
+  '1-2-G','1-2-3-G','1-2-3-2-G','1-2-S','1-2-W','1-2-B','1-2-D','1-2-3-W','1-2-3-B','1-2-3-S','1-2-3-2-W','1-2-3-2-B','1-6-3-2-W',
+  // 공격 → 방어 → 다시 공격
+  '1-2-G-2','1-2-S-2','1-2-W-3','1-2-S-2-3','1-2-W-2-3','1-2-3-W-3-2','1-2-G-3-2'
 ];
+const comboCat=c=>{const t=c.split('-');
+  if(!isPunch(t[0]))return '카운터';
+  const di=t.findIndex(x=>!isPunch(x));
+  if(di>0)return di===t.length-1?'공격 후 방어':'공격 · 방어 · 공격';
+  if(t.includes('Y'))return '바디';
+  if(t.some(x=>x==='5'||x==='6'))return '인파이팅';
+  return '기본 연결';};
+const CATS=['기본 연결','바디','인파이팅','카운터','공격 후 방어','공격 · 방어 · 공격'];
 const LENS=[[1,'단타'],[2,'2연타'],[3,'3연타'],[4,'4연타 이상']];
 const pcount=c=>c.split('-').filter(isPunch).length;
 const dcount=c=>c.split('-').filter(t=>!isPunch(t)).length;
@@ -2125,9 +2143,10 @@ $('defs').innerHTML=[
   ['D','더킹','무릎을 굽혀 곧게 아래로 내려가기. 허리를 숙이지 않고 시선은 앞.'],
   ['W','위빙','무릎을 굽혀 U자를 그리며 훅 아래로 빠져 반대쪽으로 나오기. "밥 앤 위브"라고도 해요.'],
   ['P','패리','손바닥으로 상대 직선 펀치를 살짝 쳐서 방향을 틀기. 크게 쳐내지 않기.'],
-  ['B','백스텝','뒷발부터 짧게 빠져 거리를 벌리기. 가드는 그대로.']
+  ['B','백스텝','뒷발부터 짧게 빠져 거리를 벌리기. 가드는 그대로.'],
+  ['G','블로킹','글러브와 팔뚝으로 펀치를 받아 막기. 턱 당기고 팔꿈치는 몸통에 붙이고, 막자마자 받아치기.']
 ].map(([n,t,d])=>`<div class="punch">${tokHTML(n)}<div><strong>${t}</strong><span>${d}</span></div></div>`).join('');
-$('lib').innerHTML=LENS.map(([v,l])=>{const L=COMBOS.filter(c=>lenKey(c)===v);return `<div class="lvl">${l} · ${L.length}개</div>`+L.map(c=>`<div class="libr"><span class="code">${codeText(c)}</span><span class="nm">${c.split('-').map(tokName).join(' · ')}</span>${dcount(c)?`<span class="tag" style="color:#9dbcff;background:rgba(62,123,255,.14)">${dcount(c)>1?'고급':'중급+'}</span>`:''}<button class="icon-btn" data-play="${c}" aria-label="${c} 들어보기">${ICON.speaker}</button></div>`).join('')}).join('');
+$('lib').innerHTML=CATS.map(cat=>{const L=COMBOS.filter(c=>comboCat(c)===cat);return `<div class="lvl">${cat} · ${L.length}개</div>`+L.map(c=>`<div class="libr"><span class="code">${codeText(c)}</span><span class="nm">${c.split('-').map(tokName).join(' · ')}</span><span class="tag">${['단타','2연타','3연타','4연타+'][lenKey(c)-1]}</span><button class="icon-btn" data-play="${c}" aria-label="${c} 들어보기">${ICON.speaker}</button></div>`).join('')}).join('');
 $('lib').onclick=e=>{const b=e.target.closest('[data-play]');if(!b)return;ensureAudio();sayCombo(b.dataset.play,true)};
 
 /* ---------- 용어사전 ---------- */
@@ -2211,7 +2230,7 @@ $('seg-tech').onclick=e=>{const b=e.target.closest('button');if(!b)return;techTa
 
 /* ---------- 내 콤비 ---------- */
 let MC=[];
-const PADKEYS=['1','2','3','4','5','6','S','D','W','P','B','⌫','BODY'];
+const PADKEYS=['1','2','3','4','5','6','S','D','W','P','B','G','BODY','⌫'];
 $('mc-pad').innerHTML=PADKEYS.map(k=>k==='BODY'?`<button class="bodyk" data-k="body" aria-label="바디">바디<small>BODY</small></button>`:k==='⌫'?`<button class="bk" data-k="bk" aria-label="하나 지우기">⌫</button>`:`<button class="${tokClass(k)}" data-k="${k}">${k}<small>${SHORT[k]}</small></button>`).join('');
 function drawMC(){
   $('mc-prev').innerHTML=MC.length?MC.map((t,i)=>tokHTML(t,0)).join(''):'아래 버튼을 순서대로 눌러 콤비를 만드세요<br>예: 1 → 2 → 3 → 바디 → W';
