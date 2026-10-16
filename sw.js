@@ -1,5 +1,5 @@
 // 오프라인에서도 열리도록 앱 파일을 저장해 두는 서비스 워커
-const CACHE = 'into-boxing-v22';
+const CACHE = 'into-boxing-v23';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
