@@ -1238,7 +1238,7 @@ function load(){
   }
   d.cfg=Object.assign({round:180,rest:60,rounds:3,prep:10,combo:'mid',call:'num',voice:true,warn:true,preset:'am',goal:3,mode:'preset',routine:null,after:'ask',lens:[1,2,3],mine:'mix',body:'mix',tone:'deep',voiceName:'',stance:'ortho',glove:false,vsrc:'tts',branch:'sejong'},d.cfg);
   d.records=(d.records||[]).map(normRec);
-  d.notes=d.notes||[];d.weights=d.weights||[];d.events=d.events||[];d.combos=(d.combos||[]).map(x=>({...x,code:x.code.replace(/[1-6]b/g,'Y')})).filter((x,i,a)=>a.findIndex(y=>y.code===x.code)===i);
+  d.notes=d.notes||[];d.weights=d.weights||[];d.events=d.events||[];d.combos=(d.combos||[]).map(x=>({...x,code:x.code.replace(/[1-6]b/g,'Y')})).filter((x,i,a)=>typeof x.code==='string'&&/^[1-6SDWPBGYZ](-[1-6SDWPBGYZ]){0,9}$/.test(x.code)&&a.findIndex(y=>y.code===x.code)===i);
   if(!d.presets.some(p=>p.id==='rope')&&!d.routines)d.presets.push({...DEFAULT_PRESETS.find(p=>p.id==='rope')});
   if((d.v||0)<4){
     d.presets=d.presets.filter(p=>p.id!=='pro');
