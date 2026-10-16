@@ -99,7 +99,7 @@ svg{display:block}
 
 /* 콤비 */
 .combo{min-height:128px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center}
-.toks{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.toks{display:flex;flex-wrap:nowrap;justify-content:center;gap:var(--tg,8px);width:100%}
 .tok{width:56px;height:66px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;animation:tokin .32s cubic-bezier(.2,1.4,.4,1) both}
 .tok .n{font-family:var(--f-num);font-weight:700;font-style:italic;font-size:32px;line-height:1}
 .tok .l{font-size:10px;font-weight:700;opacity:.85;white-space:nowrap}
@@ -295,9 +295,16 @@ svg{display:block}
 .punch strong{display:block;font-size:15px}
 .punch span{font-size:13px;color:var(--mute);line-height:1.45}
 .lib{display:flex;flex-direction:column;gap:8px}
-.libr{display:flex;align-items:center;gap:12px;padding:10px 10px 10px 14px;border-radius:16px;background:rgba(0,0,0,.25);border:1px solid var(--line)}
-.libr .code{font-family:var(--f-num);font-weight:700;font-style:italic;font-size:21px;min-width:120px;letter-spacing:.02em;white-space:nowrap}
-.libr .nm{flex:1;min-width:0;font-size:13px;color:var(--mute)}
+.libr{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;border-radius:16px;background:rgba(0,0,0,.25);border:1px solid var(--line)}
+.libr .lb{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.libr .nm{font-size:12.5px;color:var(--mute);line-height:1.35;overflow-wrap:anywhere}
+.libr .nm .tag{font-size:11px;padding:1px 7px;margin-left:6px;vertical-align:1px}
+.mtoks{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+.mt{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 6px;box-sizing:border-box;border-radius:8px;font-family:var(--f-num);font-weight:700;font-style:italic;font-size:16px;line-height:1}
+.mt.lead{background:linear-gradient(160deg,#f26582,var(--red-deep));color:#fff}
+.mt.rear{background:linear-gradient(160deg,#fff,#cfd4e2);color:var(--on-light)}
+.mt.def{background:rgba(62,123,255,.14);box-shadow:inset 0 0 0 1.5px var(--blue);color:#cfe0ff;font-style:normal;font-family:var(--f-body);font-size:12px;font-weight:800}
+.mt.bodytok{background:linear-gradient(160deg,#ffd76a,#e0a91f);color:#1a1405;font-style:normal;font-family:var(--f-body);font-size:12px;font-weight:800}
 .lvl{font-family:var(--f-num);font-style:italic;font-weight:800;font-size:13px;letter-spacing:.16em;color:var(--mute);margin:10px 0 2px}
 .lvl:first-child{margin-top:0}
 .tips{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
@@ -440,7 +447,7 @@ body.glove #v-timer{touch-action:manipulation}
 .mc{display:flex;flex-direction:column;gap:14px}
 .mc .card-h{margin-bottom:0}
 .mc-prev{min-height:86px;border-radius:18px;background:rgba(0,0,0,.3);border:1px dashed var(--line-2);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;padding:10px;text-align:center;color:var(--mute);font-size:14px}
-.mc-prev .tok{width:46px;height:56px}.mc-prev .tok .n{font-size:26px}
+.mc-prev{flex-wrap:nowrap!important}.mc-prev .tok{width:46px;height:56px}.mc-prev .tok .n{font-size:26px}
 .pad{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
 .pad button{height:52px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;font-family:var(--f-num);font-style:italic;font-weight:800;font-size:22px;line-height:1}
 .pad button small{font-family:var(--f-body);font-style:normal;font-weight:700;font-size:10px;opacity:.85;margin-top:2px}
@@ -505,7 +512,6 @@ body.glove #v-timer{touch-action:manipulation}
   .hero-r{align-items:center}
   .goalset{justify-content:center}
   .punches{grid-template-columns:1fr}
-  .libr .code{min-width:0;font-size:19px}
   .opt:not(.col){flex-wrap:wrap}
 }
 
@@ -633,7 +639,7 @@ body.glove #v-timer{touch-action:manipulation}
   </header>
   <div class="instbar" id="instbar" hidden>
     <svg class="ib-ic" viewBox="0 0 120 100" aria-hidden="true"><use href="#ib-mark"/></svg>
-    <div class="ib-t"><b>INTO BOXING을 앱으로 설치</b><span id="instbar-sub">홈 화면에서 바로 열고, 인터넷 없이도 써요</span></div>
+    <div class="ib-t"><b>앱으로 설치하기</b><span id="instbar-sub">홈 화면에서 바로 열기</span></div>
     <button class="pill" id="instbar-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>설치</button>
     <button class="ib-x" id="instbar-x" aria-label="닫기">×</button>
   </div>
@@ -1552,11 +1558,22 @@ function comboVisible(){
   if(S.phase==='rest'){const n=S.steps[S.si+1];return !n||S.blocks[n.bi].calls!==false}
   return S.blocks.some(b=>b.calls!==false);
 }
+function fitToks(el,maxW,maxH){
+  const items=[...el.children];if(!items.length)return;
+  const cs=getComputedStyle(el),n=items.length,avail=(el.clientWidth-parseFloat(cs.paddingLeft||0)-parseFloat(cs.paddingRight||0))||300,gap=n>5?5:8;
+  const w=Math.max(34,Math.min(maxW,Math.floor((avail-gap*(n-1))/n))),k=w/maxW;
+  el.style.setProperty('--tg',gap+'px');
+  items.forEach(t=>{t.style.width=w+'px';t.style.height=Math.round(maxH*Math.max(.82,k))+'px';t.style.borderRadius=Math.round(16*k)+'px';
+    const nn=t.querySelector('.n'),l=t.querySelector('.l');
+    if(nn){const base=parseFloat(getComputedStyle(nn).fontSize)||32;nn.style.fontSize=(base*Math.max(.62,k)).toFixed(1)+'px'}
+    if(l){l.style.fontSize=(10*Math.max(.8,k)).toFixed(1)+'px'}});
+}
 function renderCombo(){
   const c=cfg();
   $('combo').hidden=!comboVisible();
   if(S.combo){
     $('toks').innerHTML=S.combo.split('-').map(tokHTML).join('');
+    fitToks($('toks'),56,66);
     $('cbelow').innerHTML=`<div class="legend"><span><i style="background:var(--red)"></i>앞손(${isSouth()?'오른손':'왼손'})</span><span><i style="background:#e6e9f2"></i>뒷손(${isSouth()?'왼손':'오른손'})</span><span><i style="border:1.5px solid var(--blue)"></i>방어</span>${S.combo&&hasBody(S.combo)?'<span><i style="background:var(--gold)"></i>바디</span>':''}</div>`;
     return;
   }
@@ -2153,7 +2170,9 @@ $('defs').innerHTML=[
   ['B','백스텝','뒷발부터 짧게 빠져 거리를 벌리기. 가드는 그대로.'],
   ['G','블로킹','글러브와 팔뚝으로 펀치를 받아 막기. 턱 당기고 팔꿈치는 몸통에 붙이고, 막자마자 받아치기.']
 ].map(([n,t,d])=>`<div class="punch">${tokHTML(n)}<div><strong>${t}</strong><span>${d}</span></div></div>`).join('');
-$('lib').innerHTML=CATS.map(cat=>{const L=COMBOS.filter(c=>comboCat(c)===cat);return `<div class="lvl">${cat} · ${L.length}개</div>`+L.map(c=>`<div class="libr"><span class="code">${codeText(c)}</span><span class="nm">${c.split('-').map(tokName).join(' · ')}</span><span class="tag">${['단타','2연타','3연타','4연타+'][lenKey(c)-1]}</span><button class="icon-btn" data-play="${c}" aria-label="${c} 들어보기">${ICON.speaker}</button></div>`).join('')}).join('');
+const DEFSHORT={S:'슬립',D:'더킹',W:'위빙',P:'패리',B:'백스텝',G:'블록'};
+const miniToks=c=>`<span class="mtoks">${c.split('-').map(t=>`<span class="mt ${tokClass(t)}">${isBody(t)?bodyWord(t):isNaN(t)?DEFSHORT[t]:t}</span>`).join('')}</span>`;
+$('lib').innerHTML=CATS.map(cat=>{const L=COMBOS.filter(c=>comboCat(c)===cat);return `<div class="lvl">${cat} · ${L.length}개</div>`+L.map(c=>`<div class="libr"><div class="lb">${miniToks(c)}<span class="nm">${c.split('-').map(tokName).join(' · ')}<span class="tag">${['단타','2연타','3연타','4연타+'][lenKey(c)-1]}</span></span></div><button class="icon-btn" data-play="${c}" aria-label="${c} 들어보기">${ICON.speaker}</button></div>`).join('')}).join('');
 $('lib').onclick=e=>{const b=e.target.closest('[data-play]');if(!b)return;ensureAudio();sayCombo(b.dataset.play,true)};
 
 /* ---------- 용어사전 ---------- */
@@ -2241,8 +2260,9 @@ const PADKEYS=['1','2','3','4','5','6','S','D','W','P','B','G','BODY','BODY2','�
 $('mc-pad').innerHTML=PADKEYS.map(k=>k==='BODY'?`<button class="bodyk" data-k="body" aria-label="바디">바디<small>BODY</small></button>`:k==='BODY2'?`<button class="bodyk b2" data-k="body2" aria-label="양바디">양바디<small>×2</small></button>`:k==='⌫'?`<button class="bk" data-k="bk" aria-label="하나 지우기">⌫</button>`:`<button class="${tokClass(k)}" data-k="${k}">${k}<small>${SHORT[k]}</small></button>`).join('');
 function drawMC(){
   $('mc-prev').innerHTML=MC.length?MC.map((t,i)=>tokHTML(t,0)).join(''):'아래 버튼을 순서대로 눌러 콤비를 만드세요<br>예: 1 → 2 → 3 → 바디 → W';
+  if(MC.length)fitToks($('mc-prev'),46,56);
   $('mc-count').textContent=`저장 ${D.combos.length}개`;
-  $('mc-list').innerHTML=D.combos.length?D.combos.slice().reverse().map(x=>`<div class="libr"><span class="code">${codeText(x.code)}</span><span class="nm">${x.code.split('-').map(tokName).join(' · ')}</span><button class="icon-btn" data-play="${x.code}" aria-label="들어보기">${ICON.speaker}</button><button class="icon-btn" data-rm="${x.id}" aria-label="삭제">×</button></div>`).join('')
+  $('mc-list').innerHTML=D.combos.length?D.combos.slice().reverse().map(x=>`<div class="libr"><div class="lb">${miniToks(x.code)}<span class="nm">${x.code.split('-').map(tokName).join(' · ')}</span></div><button class="icon-btn" data-play="${x.code}" aria-label="들어보기">${ICON.speaker}</button><button class="icon-btn" data-rm="${x.id}" aria-label="삭제">×</button></div>`).join('')
     :'<div class="empty" style="padding:8px">저장한 콤비가 없어요. 관장님이 자주 시키는 콤비를 넣어두면 타이머가 섞어서 불러줘요.</div>';
 }
 $('mc-pad').onclick=e=>{
