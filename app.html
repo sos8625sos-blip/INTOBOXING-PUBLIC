@@ -843,7 +843,7 @@ body.glove #v-timer{touch-action:manipulation}
     <div class="gymhero">
       <svg class="gh-mark" viewBox="0 0 120 100" aria-hidden="true"><use href="#ib-mark"/></svg>
       <div class="gh-t">
-        <span class="eyebrow" id="gym-eb">Sejong · Dajeong-dong</span>
+        <span class="eyebrow" id="gym-eb">Sejong · Dajeong</span>
         <h2 id="gym-name">인투복싱</h2>
         <div class="gh-status" id="gym-status"></div>
       </div>
@@ -906,9 +906,9 @@ body.glove #v-timer{touch-action:manipulation}
     <div class="card">
       <div class="card-h"><h3>채널</h3><span class="eyebrow">Follow</span></div>
       <div class="chans">
-        <a class="chan" href="https://www.instagram.com/into_BOXING" target="_blank" rel="noopener">
+        <a class="chan" href="https://www.instagram.com/into_boxing" target="_blank" rel="noopener">
           <span class="ci ig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></span>
-          <span class="ct2"><b>@into_BOXING</b><small>인스타그램 · 세종 다정점</small></span><span class="ar">›</span>
+          <span class="ct2"><b>@into_boxing</b><small>인스타그램 · 세종 다정점</small></span><span class="ar">›</span>
         </a>
         <a class="chan" href="https://www.instagram.com/into_boxing2" target="_blank" rel="noopener">
           <span class="ci ig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></span>
@@ -2402,14 +2402,14 @@ $('rep-close').onclick=()=>closeSheet('sh-rep');
 /* ---------- 체육관 ---------- */
 const WK=(o)=>({1:o,2:o,3:o,4:o,5:o});
 const BRANCHES={
-  sejong:{tab:'세종 다정점',eb:'Sejong · Dajeong-dong',name:'인투복싱',who:'관장 김동협',phone:'0507-1310-8656',
+  sejong:{tab:'세종 다정점',eb:'Sejong · Dajeong',name:'인투복싱',who:'관장 김동협',phone:'0507-1310-8656',
     hours:Object.assign(WK([[570,1440]]),{6:[[600,720]],0:[]}),breaks:[[690,870],[1110,1140]],brkText:'평일 휴게시간 11:30–14:30 · 18:30–19:00',
     addr:['세종 다정중앙로 40, 404·405호','다정동 중앙상가 파리바게트 건물 4층','다정동 복합커뮤니티센터에서 걸어서 1분'],addrCopy:'세종 다정중앙로 40 404, 405호',
     q:'인투복싱',feat:['주차 가능','남·녀 화장실 구분','단체 이용 가능','링 · 샌드백','물 · 수건 제공'],staff:true},
-  gongju:{tab:'공주 신관점',eb:'Gongju · Singwan',name:'인투복싱 공주신관점',who:'공주 신관점 상담',phone:'0507-1306-8656',
+  gongju:{tab:'공주 신관점',eb:'Gongju · Singwan',name:'인투복싱 공주신관점',who:'관장 김동협',phone:'0507-1306-8656',
     hours:Object.assign(WK([[870,1320]]),{6:[],0:[]}),breaks:[[1110,1140]],brkText:'평일 휴게시간 18:30–19:00 · 주말 휴무',
     addr:['충남 공주시 한적1길 2, 2층 201호','신관초 사거리 중앙교회 맞은편 건물 2층'],addrCopy:'충남 공주시 한적1길 2 2층 201호',
-    q:'인투복싱 공주신관점',feat:['검증된 시스템','오픈 1년 회원 420명','링 · 샌드백'],staff:false}
+    q:'인투복싱 공주신관점',feat:['검증된 시스템','오픈 1년 회원 420명','링 · 샌드백'],staff:true}
 };
 const GB=()=>BRANCHES[cfg().branch]||BRANCHES.sejong;
 const hhmm=m=>`${pad(Math.floor(m/60))}:${pad(m%60)}`;
@@ -2452,7 +2452,7 @@ function renderGym(){
   $('gym-nmap').href='https://map.naver.com/p/search/'+encodeURIComponent(B.q);
   $('gym-kmap').href='https://map.kakao.com/?q='+encodeURIComponent(B.q);
   $('gym-navi').textContent=`내비게이션(네이버·T맵·카카오내비)에서 "${B.q}"으로 검색하면 바로 찾아가요`;
-  $('gym-feat-h').textContent=B.staff?'시설 · 편의':'특징';
+  $('gym-feat-h').textContent=cfg().branch==='gongju'?'특징':'시설 · 편의';
   $('gym-feat').innerHTML=B.feat.map(f=>`<span class="tchip">${f}</span>`).join('');
 }
 $('seg-branch').onclick=e=>{const b=e.target.closest('[data-b]');if(!b)return;cfg().branch=b.dataset.b;save();renderGym()};
