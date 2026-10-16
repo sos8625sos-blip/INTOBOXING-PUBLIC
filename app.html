@@ -317,7 +317,7 @@ svg{display:block}
 
 /* 하단 탭 */
 .nav{position:fixed;left:0;right:0;bottom:0;z-index:5;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));pointer-events:none}
-.nav .in{pointer-events:auto;max-width:420px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:6px;border-radius:24px;background:rgba(23,23,28,.84);border:1px solid var(--line-2);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 18px 40px -16px rgba(0,0,0,.8)}
+.nav .in{pointer-events:auto;max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:6px;border-radius:24px;background:rgba(23,23,28,.84);border:1px solid var(--line-2);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 18px 40px -16px rgba(0,0,0,.8)}
 .nav button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 6px;border-radius:18px;font-size:11px;font-weight:700;color:var(--mute);transition:background .2s,color .2s}
 .nav button svg{width:22px;height:22px}
 .nav button.on{color:var(--ink);background:rgba(255,255,255,.09)}
@@ -507,6 +507,62 @@ body.glove #v-timer{touch-action:manipulation}
   .libr .code{min-width:0;font-size:19px}
   .opt:not(.col){flex-wrap:wrap}
 }
+
+
+/* 체육관 탭 */
+.gymhero{display:flex;align-items:center;gap:16px;padding:22px 20px;border-radius:24px;position:relative;overflow:hidden;background:#111114;border:1px solid var(--line)}
+.gymhero::before{content:"";position:absolute;left:-20%;top:50%;width:140%;height:46%;background:linear-gradient(90deg,#c22d4c,#ee4a6b);transform:translateY(-50%) rotate(-22deg);opacity:.85}
+.gymhero>*{position:relative}
+.gh-mark{width:64px;height:54px;flex:none;filter:drop-shadow(0 8px 18px rgba(0,0,0,.55))}
+.gh-t{min-width:0;display:flex;flex-direction:column;gap:4px}
+.gh-t h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:30px;text-shadow:0 2px 12px rgba(0,0,0,.4)}
+.gh-t .eyebrow{color:rgba(255,255,255,.75)}
+.gh-status{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;padding:4px 11px;border-radius:99px;background:rgba(0,0,0,.55);font-size:13px;font-weight:800}
+.gh-status i{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+.gh-status.brk i{background:var(--gold);box-shadow:0 0 10px var(--gold)}
+.gh-status.off i{background:var(--dim);box-shadow:none}
+.callcard{display:flex;flex-direction:column;gap:14px;background:linear-gradient(135deg,rgba(51,196,122,.14),rgba(51,196,122,.02) 65%),var(--card);border-color:rgba(51,196,122,.3)}
+.cc-who{display:flex;flex-direction:column;gap:2px}
+.cc-who b{font-size:20px;font-weight:800}
+.cc-num{font-family:var(--f-num);font-size:24px;font-weight:600;letter-spacing:.02em;user-select:all;-webkit-user-select:all}
+.cc-acts{display:flex;gap:8px;flex-wrap:wrap}
+.callbtn{flex:1;min-width:160px;height:56px;border-radius:18px;display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--green);color:#04130a;font-weight:800;font-size:17px;text-decoration:none;box-shadow:0 12px 28px -12px var(--green)}
+.callbtn svg{width:22px;height:22px}
+.callbtn:active{transform:scale(.98)}
+.cc-acts .pill{height:56px;border-radius:18px}
+.hours{display:flex;flex-direction:column}
+.hr{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:14px}
+.hr:first-child{border-top:0;padding-top:0}
+.hr .d{font-weight:800;color:var(--mute)}
+.hr .t{font-family:var(--f-num);font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}
+.hr .t small{display:block;font-family:var(--f-body);font-size:11px;color:var(--mute);font-weight:500}
+.hr.off .t{color:var(--dim);font-family:var(--f-body);font-size:14px}
+.hr.today .d{color:var(--ink)}
+.hr .now{font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--ink);color:var(--on-light)}
+.ptabs{display:grid;grid-template-columns:1fr 1fr;gap:3px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:14px;padding:3px;margin-bottom:12px}
+.ptabs button{padding:9px;border-radius:11px;font-size:14px;font-weight:600;color:var(--mute)}
+.ptabs button.on{background:var(--ink);color:var(--on-light);font-weight:800}
+.plist{display:flex;flex-direction:column;gap:8px}
+.pr{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-radius:16px;background:rgba(0,0,0,.25);border:1px solid var(--line)}
+.pr .pl b{display:block;font-size:16px;font-weight:800}
+.pr .pl small{font-size:12px;color:var(--mute)}
+.pr .pv{font-family:var(--f-num);font-weight:700;font-size:26px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pr .pv small{font-family:var(--f-body);font-size:13px;color:var(--mute);font-weight:600;margin-left:2px}
+.pr.best{border-color:rgba(236,63,96,.45);background:linear-gradient(120deg,rgba(236,63,96,.14),transparent 70%)}
+.addr{display:flex;flex-direction:column;gap:3px;font-size:14px;color:var(--mute)}
+.addr b{color:var(--ink);font-size:16px}
+.maps{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.maps .pill{text-decoration:none}
+.insta{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
+.insta svg{width:30px;height:30px;color:#ee4a6b;flex:none}
+.insta span{flex:1;min-width:0;display:flex;flex-direction:column}
+.insta b{font-size:16px}
+.insta small{font-size:12px;color:var(--mute)}
+.insta .ar{flex:none;color:var(--mute);font-size:22px}
+.mottos{text-align:center;padding:6px 0 4px;display:flex;flex-direction:column;gap:2px}
+.mottos p{margin:0;font-family:var(--f-brand);font-weight:900;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.mottos b{color:#ee4a6b;font-weight:900}
+.nav button{font-size:10.5px}
 
 /* 시작 화면 */
 .splash{position:fixed;inset:0;z-index:100000;background:#09090b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:24px max(24px,env(safe-area-inset-right,0px)) 24px max(24px,env(safe-area-inset-left,0px));overflow:hidden;cursor:pointer;transition:opacity .7s ease,visibility .7s}
@@ -726,6 +782,84 @@ body.glove #v-timer{touch-action:manipulation}
     <div class="notes" id="notes"></div>
   </section>
 
+
+  <!-- ===== 체육관 ===== -->
+  <section class="view" id="v-gym" hidden>
+    <div class="gymhero">
+      <svg class="gh-mark" viewBox="0 0 120 100" aria-hidden="true"><use href="#ib-mark"/></svg>
+      <div class="gh-t">
+        <span class="eyebrow">Sejong · Dajeong-dong</span>
+        <h2>인투복싱</h2>
+        <div class="gh-status" id="gym-status"></div>
+      </div>
+    </div>
+
+    <div class="card callcard">
+      <div class="cc-who">
+        <span class="eyebrow">상담 문의</span>
+        <b>관장 김동협</b>
+        <span class="cc-num" id="gym-num">0507-1310-8656</span>
+      </div>
+      <div class="cc-acts">
+        <a class="callbtn" href="tel:050713108656" aria-label="관장 김동협에게 전화 걸기">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg>
+          전화 걸기
+        </a>
+        <button class="pill ghost" id="gym-copy">번호 복사</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h3>운영 시간</h3><span class="eyebrow">Hours</span></div>
+      <div class="hours" id="gym-hours"></div>
+      <p class="muted" style="margin:12px 0 0;font-size:12px">평일 휴게시간 11:30–14:30 · 18:30–19:00</p>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h3>회원권</h3><span class="eyebrow">Membership</span></div>
+      <div class="ptabs" id="gym-ptabs"></div>
+      <div class="plist" id="gym-prices"></div>
+      <p class="muted" style="margin:12px 0 0;font-size:12px">6개월·1년권은 별도 문의 · 가격은 바뀔 수 있으니 상담할 때 확인하세요</p>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h3>오시는 길</h3><span class="eyebrow">Location</span></div>
+      <div class="addr">
+        <b>세종 다정중앙로 40, 404·405호</b>
+        <span>다정동 중앙상가 파리바게트 건물 4층</span>
+        <span>다정동 복합커뮤니티센터에서 걸어서 1분</span>
+      </div>
+      <div class="maps">
+        <a class="pill ghost" href="https://map.naver.com/p/search/%EC%9D%B8%ED%88%AC%EB%B3%B5%EC%8B%B1" target="_blank" rel="noopener">네이버 지도</a>
+        <a class="pill ghost" href="https://map.kakao.com/?q=%EC%9D%B8%ED%88%AC%EB%B3%B5%EC%8B%B1" target="_blank" rel="noopener">카카오맵</a>
+        <button class="pill ghost" id="gym-addr-copy">주소 복사</button>
+      </div>
+      <p class="muted" style="margin:12px 0 0;font-size:12px">내비게이션(네이버·T맵·카카오내비)에서 "인투복싱"으로 검색하면 바로 찾아가요</p>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h3>시설 · 편의</h3></div>
+      <div class="tchips">
+        <span class="tchip">주차 가능</span>
+        <span class="tchip">남·녀 화장실 구분</span>
+        <span class="tchip">단체 이용 가능</span>
+        <span class="tchip">링 · 샌드백</span>
+        <span class="tchip">물 · 수건 제공</span>
+      </div>
+    </div>
+
+    <a class="card insta" href="https://www.instagram.com/into_BOXING" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+      <span><b>@into_BOXING</b><small>인스타그램에서 소식 보기</small></span>
+      <span class="ar">›</span>
+    </a>
+
+    <div class="mottos">
+      <p><b>I</b>ntensify <b>N</b>ow <b>T</b>ake <b>O</b>ver</p>
+      <p><b>I</b>magine <b>N</b>ew <b>T</b>rails <b>O</b>pening</p>
+    </div>
+  </section>
+
   <!-- ===== 기술 ===== -->
   <section class="view" id="v-tech" hidden>
     <div class="vh"><h2>기술</h2></div>
@@ -797,6 +931,7 @@ body.glove #v-timer{touch-action:manipulation}
   <button id="t-log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>기록</button>
   <button id="t-notes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5h10l4 4v13H5z"/><path d="M9 11h6M9 15h4"/></svg>메모</button>
   <button id="t-tech"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>기술</button>
+  <button id="t-gym"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V9l7-5 7 5v12"/><path d="M10 21v-6h4v6"/></svg>체육관</button>
 </div></nav>
 
 <!-- 기록 시트 -->
@@ -2139,6 +2274,48 @@ function bindRep(){
 $('b-report').onclick=()=>{repY=calY;repM=calM;renderReport();openSheet('sh-rep')};
 $('rep-close').onclick=()=>closeSheet('sh-rep');
 
+
+/* ---------- 체육관 ---------- */
+const GYM_HOURS={1:[[570,1440]],2:[[570,1440]],3:[[570,1440]],4:[[570,1440]],5:[[570,1440]],6:[[600,720]],0:[]};
+const GYM_BREAKS=[[690,870],[1110,1140]];
+const hhmm=m=>`${pad(Math.floor(m/60)%24===0&&m>=1440?24:Math.floor(m/60))}:${pad(m%60)}`;
+function gymStatus(){
+  const n=new Date(),d=n.getDay(),m=n.getHours()*60+n.getMinutes(),open=GYM_HOURS[d];
+  const inOpen=open.find(([a,b])=>m>=a&&m<b);
+  if(!inOpen){
+    for(let k=0;k<7;k++){const dd=(d+k)%7,o=GYM_HOURS[dd];if(!o.length)continue;const st=o[0][0];if(k===0&&st<=m)continue;
+      return{cls:'off',txt:`영업 종료 · ${k===0?'오늘':k===1?'내일':WD[dd]+'요일'} ${hhmm(st)} 오픈`}}
+    return{cls:'off',txt:'영업 종료'};
+  }
+  if(d>=1&&d<=5){const br=GYM_BREAKS.find(([a,b])=>m>=a&&m<b);if(br)return{cls:'brk',txt:`휴게시간 · ${hhmm(br[1])}에 다시 열어요`}}
+  const nb=(d>=1&&d<=5)?GYM_BREAKS.find(([a])=>a>m):null;
+  return{cls:'on',txt:nb?`운영 중 · ${hhmm(nb[0])}에 휴게시간`:`운영 중 · ${hhmm(inOpen[1])}까지`};
+}
+const GYM_PRICES={'3':[['주 5회',500000,'월~금 매일'],['주 3회',450000,''],['주 2회',400000,'']],'1':[['주 5회',200000,'월~금 매일'],['주 3회',170000,''],['주 2회',150000,'']]};
+let gymP='3';
+function renderGym(){
+  const st=gymStatus();$('gym-status').className='gh-status '+(st.cls==='on'?'':st.cls);$('gym-status').innerHTML=`<i></i>${st.txt}`;
+  const td=new Date().getDay();
+  const rows=[[1,'월'],[2,'화'],[3,'수'],[4,'목'],[5,'금'],[6,'토'],[0,'일']].map(([d,l])=>{
+    const o=GYM_HOURS[d],now=d===td;
+    if(!o.length)return `<div class="hr off${now?' today':''}"><span class="d">${l}</span><span class="t">정기 휴무</span>${now?'<span class="now">오늘</span>':'<span></span>'}</div>`;
+    return `<div class="hr${now?' today':''}"><span class="d">${l}</span><span class="t">${hhmm(o[0][0])} – ${hhmm(o[0][1])}${d<=5&&d>=1?'<small>휴게 11:30–14:30 · 18:30–19:00</small>':''}</span>${now?'<span class="now">오늘</span>':'<span></span>'}</div>`;
+  }).join('');
+  $('gym-hours').innerHTML=rows;
+  $('gym-ptabs').innerHTML=[['3','3개월'],['1','1개월']].map(([v,l])=>`<button data-p="${v}" class="${gymP===v?'on':''}">${l}</button>`).join('');
+  $('gym-prices').innerHTML=GYM_PRICES[gymP].map(([n,won,sub],i)=>{
+    const per=gymP==='3'?`한 달로 나누면 약 ${(won/3/10000).toFixed(1)}만원`:sub;
+    return `<div class="pr${i===0?' best':''}"><div class="pl"><b>${gymP}개월 ${n}</b>${per?`<small>${per}</small>`:''}</div><div class="pv">${(won/10000).toLocaleString()}<small>만원</small></div></div>`}).join('');
+}
+$('gym-ptabs').onclick=e=>{const b=e.target.closest('[data-p]');if(!b)return;gymP=b.dataset.p;renderGym()};
+function copyText(txt,okMsg){
+  const done=()=>toast(okMsg);
+  try{navigator.clipboard.writeText(txt).then(done,()=>toast(txt))}catch(e){toast(txt)}
+}
+$('gym-copy').onclick=()=>copyText('0507-1310-8656','전화번호를 복사했어요');
+$('gym-addr-copy').onclick=()=>copyText('세종 다정중앙로 40 404, 405호','주소를 복사했어요');
+setInterval(()=>{if(!$('v-gym').hidden)renderGym()},60000);
+
 /* ---------- 백업 ---------- */
 $('b-backup').onclick=()=>{$('bk-text').value='';resetDel('bk-restore');$('bk-restore').textContent='붙여넣은 코드로 복원';openSheet('sh-bk')};
 $('bk-copy').onclick=()=>{
@@ -2156,12 +2333,13 @@ $('bk-restore').onclick=e=>{
 };
 
 /* ---------- 탭 ---------- */
-const TABS={timer:'v-timer',log:'v-log',notes:'v-notes',tech:'v-tech'};
+const TABS={timer:'v-timer',log:'v-log',notes:'v-notes',tech:'v-tech',gym:'v-gym'};
 function tab(name){
   Object.entries(TABS).forEach(([k,v])=>{$(v).hidden=k!==name;$('t-'+k).classList.toggle('on',k===name)});
   if(name==='log')renderLog();
   if(name==='notes')renderNotes();
   if(name==='tech')renderTechTabs();
+  if(name==='gym')renderGym();
   window.scrollTo(0,0);
 }
 Object.keys(TABS).forEach(k=>$('t-'+k).onclick=()=>tab(k));
