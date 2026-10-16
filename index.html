@@ -222,14 +222,24 @@ svg{display:block}
 .cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
 .cal .wd{text-align:center;font-size:11px;font-weight:700;color:var(--dim);padding-bottom:4px}
 .cal .wd.sun{color:#c8586a}
-.cd{position:relative;aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--f-num);font-weight:600;font-size:17px;color:var(--mute);font-variant-numeric:tabular-nums;max-width:100%}
+.cal .wd.sat{color:#6f93e0}
+.cd{position:relative;min-height:68px;border-radius:12px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:3px;padding:5px 3px 4px;font-family:var(--f-num);font-weight:600;font-size:15px;color:var(--mute);font-variant-numeric:tabular-nums;max-width:100%;min-width:0;overflow:hidden;text-align:center}
+.cd .dn{line-height:1.1}
+.cd.sun .dn{color:#e07a8c}.cd.sat .dn{color:#8fb0f0}
+.cd.has .dn{color:#fff}
+.cd .cts{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.cd .ct{max-width:100%;box-sizing:border-box;font-family:var(--f-body);font-size:9.5px;font-weight:800;line-height:1.35;padding:0 3px;border-radius:4px;background:rgba(0,0,0,.32);color:#fff;white-space:nowrap;overflow:hidden;text-overflow:clip;letter-spacing:-.03em}
+.cd .ct.ev{background:var(--gold);color:#1a1405}
+.cd .ct.more{background:none;color:rgba(255,255,255,.75);padding:0}
+.cd .cm{margin-top:auto;font-size:11px;font-weight:600;color:rgba(255,255,255,.8);line-height:1}
 .cd.has{color:#fff}
 .cd.lv1{background:rgba(236,63,96,.2)}
 .cd.lv2{background:rgba(236,63,96,.4)}
 .cd.lv3{background:rgba(236,63,96,.65)}
 .cd.lv4{background:linear-gradient(150deg,#f26582,var(--red-deep));box-shadow:0 6px 16px -8px var(--red)}
-.cd.today{box-shadow:inset 0 0 0 1.5px var(--gold);color:var(--gold)}
-.cd.today.has{color:#fff}
+.cd.today{box-shadow:inset 0 0 0 1.5px var(--gold)}
+.cd.today .dn{color:var(--gold)}
+.cd.today.has .dn{color:#fff;text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:3px}
 .cd.sel{outline:2px solid var(--ink);outline-offset:1px}
 .cd .dots{position:absolute;bottom:4px;display:flex;gap:2px}
 .cd .dots i{width:4px;height:4px;border-radius:50%;background:#fff;opacity:.9}
@@ -417,7 +427,7 @@ textarea.inp{height:auto;min-height:100px;padding:12px 14px;resize:vertical;line
 .ddrow .d{font-size:12px;color:var(--mute);flex:none}
 .ddempty{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;color:var(--mute)}
 .ddempty b{display:block;color:var(--ink);font-size:15px}
-.cd .flag{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:2px;background:var(--gold);transform:rotate(45deg);box-shadow:0 0 8px rgba(246,196,69,.8)}
+
 .cd.evonly{box-shadow:inset 0 0 0 1.5px rgba(246,196,69,.45);color:var(--gold)}
 .evrow{width:100%;text-align:left;display:flex;align-items:center;gap:12px;padding:14px;border-radius:18px;background:linear-gradient(120deg,rgba(246,196,69,.12),rgba(246,196,69,.03));border:1px solid rgba(246,196,69,.3)}
 .evrow .ei{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
@@ -713,7 +723,7 @@ body.glove #v-timer{touch-action:manipulation}
         </div>
       </div>
       <div class="cal" id="cal"></div>
-      <div class="cal-leg"><span style="display:inline-flex;align-items:center;gap:6px;margin-right:auto"><i style="width:8px;height:8px;border-radius:2px;background:var(--gold);transform:rotate(45deg)"></i>일정</span>적게 <i style="background:rgba(236,63,96,.2)"></i><i style="background:rgba(236,63,96,.4)"></i><i style="background:rgba(236,63,96,.65)"></i><i style="background:var(--red)"></i> 많이</div>
+      <div class="cal-leg"><span style="display:inline-flex;align-items:center;gap:6px;margin-right:auto"><i style="width:22px;height:12px;border-radius:3px;background:var(--gold)"></i>일정 · 숫자′는 운동 분</span>적게 <i style="background:rgba(236,63,96,.2)"></i><i style="background:rgba(236,63,96,.4)"></i><i style="background:rgba(236,63,96,.65)"></i><i style="background:var(--red)"></i> 많이</div>
       <div class="day-h"><b id="day-t"></b><div class="dhb"><button class="pill ghost" id="b-addevday" style="height:34px;padding:0 12px;font-size:13px">+ 일정</button><button class="pill ghost" id="b-addday" style="height:34px;padding:0 12px;font-size:13px">+ 기록</button></div></div>
       <div class="entries" id="entries"></div>
     </div>
@@ -1761,13 +1771,22 @@ function renderLog(){
   $('rep-btn-t').textContent=`${calM+1}월 월간 리포트`;
   const mk=`${calY}-${pad(calM+1)}`,cm=D.records.filter(r=>r.date.startsWith(mk));
   $('cal-ms').textContent=cm.length?`${new Set(cm.map(r=>r.date)).size}일 운동 · ${cm.reduce((a,r)=>a+recRounds(r),0)}라운드 · ${minText(cm.reduce((a,r)=>a+recSec(r),0))}`:'이 달은 아직 기록이 없어요';
-  const first=new Date(calY,calM,1),offset=(first.getDay()+6)%7,days=new Date(calY,calM+1,0).getDate();
-  let h=['월','화','수','목','금','토','일'].map(w=>`<div class="wd${w==='일'?' sun':''}">${w}</div>`).join('');
+  const first=new Date(calY,calM,1),offset=first.getDay(),days=new Date(calY,calM+1,0).getDate();
+  let h=['일','월','화','수','목','금','토'].map(w=>`<div class="wd${w==='일'?' sun':w==='토'?' sat':''}">${w}</div>`).join('');
   for(let i=0;i<offset;i++)h+='<div></div>';
-  const evDays=new Set(D.events.map(e=>e.date));
+  const evByDay={};D.events.forEach(e=>{(evByDay[e.date]=evByDay[e.date]||[]).push(e)});
+  const typesByDay={};D.records.forEach(r=>{if(!r.date.startsWith(mk))return;const o=(typesByDay[r.date]=typesByDay[r.date]||{});r.items.forEach(it=>{o[it.type]=(o[it.type]||0)+it.rounds})});
   for(let d=1;d<=days;d++){
-    const k=`${mk}-${pad(d)}`,t=tot[k],l=t?lvl(t.sec,t.n):0,ev=evDays.has(k);
-    h+=`<button class="cd${l?' has lv'+l:''}${ev&&!l?' evonly':''}${k===tk?' today':''}${k===selDay?' sel':''}" data-k="${k}" aria-label="${calM+1}월 ${d}일${t?' 운동 '+t.n+'회':''}${ev?' 일정 있음':''}">${d}${ev?'<span class="flag"></span>':''}${t&&t.n>1?`<span class="dots">${'<i></i>'.repeat(Math.min(3,t.n))}</span>`:''}</button>`;
+    const k=`${mk}-${pad(d)}`,t=tot[k],l=t?lvl(t.sec,t.n):0,evs=evByDay[k]||[],ev=evs.length>0;
+    const dow=(offset+d-1)%7;
+    const ty=Object.entries(typesByDay[k]||{}).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
+    let chips='';
+    if(ev)chips+=`<span class="ct ev">${esc(evs[0].kind)}</span>`;
+    const room=ev?1:2;
+    ty.slice(0,room).forEach(x=>chips+=`<span class="ct">${esc(x)}</span>`);
+    if(ty.length>room)chips+=`<span class="ct more">+${ty.length-room}</span>`;
+    const lab=`${calM+1}월 ${d}일${ty.length?' '+ty.join(', '):''}${t?` ${Math.round(t.sec/60)}분`:''}${ev?' '+evs.map(e=>e.title).join(', '):''}`;
+    h+=`<button class="cd${l?' has lv'+l:''}${ev&&!l?' evonly':''}${k===tk?' today':''}${k===selDay?' sel':''}${dow===0?' sun':dow===6?' sat':''}" data-k="${k}" aria-label="${esc(lab)}"><span class="dn">${d}</span>${chips?`<span class="cts">${chips}</span>`:''}${t?`<span class="cm">${Math.round(t.sec/60)}′</span>`:''}</button>`;
   }
   $('cal').innerHTML=h;
   renderDDayCard();
