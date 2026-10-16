@@ -2643,7 +2643,7 @@ $('bk-restore').onclick=e=>{
 /* ---------- 공지 ----------
    공지를 바꾸려면 아래 목록만 고치면 돼요. until 날짜가 지나면 자동으로 사라져요. */
 let NOTICES=[
-  {id:'welcome-2026-10',kind:'안내',text:'인투복싱에 오신 것을 환영합니다',sub:'기록 탭 아래 "데이터 백업"에서 카톡으로 백업해두면 휴대폰을 바꿔도 안전해요',until:'2026-11-30'}
+  {id:'welcome-2026-10',kind:'안내',text:'인투복싱에 오신 것을 환영합니다',until:'2026-11-30'}
 ];
 function renderNotice(){
   let closed=[];try{closed=JSON.parse(localStorage.getItem('ib-notice-x')||'[]')}catch(e){}
