@@ -1125,7 +1125,7 @@ body.glove #v-timer{touch-action:manipulation}
       <div class="fl"><span class="lb">라운드 수</span><div class="stp"><button data-ps="rounds" data-d="-1" aria-label="줄이기">−</button><span class="v" id="pf-rounds"></span><button data-ps="rounds" data-d="1" aria-label="늘리기">+</button></div></div>
     </div>
     <div class="fl"><span class="lb">운동 종류 (기록할 때 자동 선택)</span><div class="tchips" id="pf-type"></div></div>
-    <div class="rowsw"><span>이 프리셋에서 콤비 콜아웃<br><small class="muted" style="font-weight:500;font-size:12px">줄넘기·근력처럼 콤비가 필요 없으면 꺼두세요</small></span><button class="sw" id="pf-calls" role="switch" aria-label="이 프리셋에서 콤비 콜아웃"><i></i></button></div>
+    <div class="rowsw"><span>이 프리셋에서 콤비 콜아웃<br><small class="muted" style="font-weight:500;font-size:12px">미트·스파링·줄넘기를 고르면 자동으로 꺼져요</small></span><button class="sw" id="pf-calls" role="switch" aria-label="이 프리셋에서 콤비 콜아웃"><i></i></button></div>
     <div class="acts">
       <button class="btn danger" id="pf-del" hidden>삭제</button>
       <button class="btn" id="pf-cancel">취소</button>
@@ -1281,8 +1281,9 @@ const DEFAULT_PRESETS=[
   {id:'rope',name:'줄넘기 워밍업',round:180,rest:30,rounds:2,type:'줄넘기',calls:false},
   {id:'shadow',name:'섀도복싱',round:120,rest:30,rounds:6,type:'섀도'},
   {id:'bag',name:'샌드백 인터벌',round:60,rest:30,rounds:10,type:'샌드백'},
-  {id:'mitt',name:'미트 훈련',round:120,rest:60,rounds:4,type:'미트'}
+  {id:'mitt',name:'미트 훈련',round:120,rest:60,rounds:4,type:'미트',calls:false}
 ];
+const NOCALL_TYPES=['미트','스파링','줄넘기'];
 const EV_KINDS=['대회','계체','승급심사','스파링 데이','기타'];
 function normRec(r){
   if(Array.isArray(r.items))return r;
@@ -1329,6 +1330,7 @@ function load(){
     d.routines=[{id:'r1',name:'기본 풀코스',blocks:['rope','shadow','bag']},{id:'r2',name:'섀도 → 샌드백',blocks:['shadow','bag']},{id:'r3',name:'미트 데이',blocks:['rope','shadow','mitt']}];
     d.routines.forEach(r=>r.blocks=r.blocks.filter(id=>d.presets.some(p=>p.id===id)));
   }
+  if((d.v||0)<8){(d.presets||[]).forEach(p=>{if(NOCALL_TYPES.includes(p.type))p.calls=false});d.v=8}
   if(!d.cfg.routine&&d.routines[0])d.cfg.routine=d.routines[0].id;
   return d;
 }
@@ -1930,7 +1932,11 @@ function openPreset(id){
   $('pf-name').value=PF.name;
   $('pf-del').hidden=!p||D.presets.length<=1;resetDel('pf-del');
   PF.calls=p?p.calls!==false:true;$('pf-calls').setAttribute('aria-checked',String(PF.calls));
-  drawPF();chips($('pf-type'),TYPES,PF.typeSel,false);
+  drawPF();chips($('pf-type'),TYPES,PF.typeSel,false,()=>{
+    const t=PF.typeSel[0];
+    if(NOCALL_TYPES.includes(t)&&PF.calls){PF.calls=false;$('pf-calls').setAttribute('aria-checked','false');toast(`${t}은(는) 콜아웃을 자동으로 껐어요`)}
+    else if(t&&!NOCALL_TYPES.includes(t)&&!PF.calls&&!PF.id){PF.calls=true;$('pf-calls').setAttribute('aria-checked','true')}
+  });
   openSheet('sh-pre');
 }
 function drawPF(){$('pf-round').textContent=fmt(PF.round);$('pf-rest').textContent=fmt(PF.rest);$('pf-rounds').textContent=PF.rounds+'R'}
