@@ -670,6 +670,16 @@ body.glove #v-timer{touch-action:manipulation}
 }
 .bklast{font-size:12px;color:var(--mute);text-align:center;margin-top:-10px}
 
+
+/* 글씨 크기 */
+body.fz1 .app,body.fz1 .nav,body.fz1 .sheetwrap,body.fz1 .toast{zoom:1.12}
+body.fz2 .app,body.fz2 .nav,body.fz2 .sheetwrap,body.fz2 .toast{zoom:1.25}
+body.fz1 .today,body.fz2 .today{display:none}
+@media (orientation:landscape) and (max-height:600px){body.land.live .app{zoom:1!important}}
+/* 화면 꺼짐 알림 */
+.awaybar{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:16px;background:rgba(62,123,255,.14);border:1px solid rgba(62,123,255,.4);font-size:13px;color:var(--mute);text-align:center}
+.awaybar b{color:var(--ink);font-size:14px}
+
 /* 시작 화면 */
 .splash{position:fixed;inset:0;z-index:100000;background:#09090b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:24px max(24px,env(safe-area-inset-right,0px)) 24px max(24px,env(safe-area-inset-left,0px));overflow:hidden;cursor:pointer;transition:opacity .7s ease,visibility .7s}
 .splash.out{opacity:0;visibility:hidden}
@@ -734,6 +744,7 @@ body.glove #v-timer{touch-action:manipulation}
   <section class="view" id="v-timer">
     <button class="ddchip" id="dd-timer" hidden></button>
     <div class="modechip" id="modechip" hidden></div>
+    <div class="awaybar" id="awaybar" hidden role="status"></div>
     <div class="stage">
       <div class="dial">
         <svg viewBox="0 0 320 320" aria-hidden="true">
@@ -832,12 +843,17 @@ body.glove #v-timer{touch-action:manipulation}
         <details class="more" id="m-etc">
           <summary><span><b>자세 · 화면 · 기록</b><small id="m-etc-sum"></small></span><i class="chev"></i></summary>
           <div class="opts">
+          <div class="opt col">
+            <div class="t"><b>글씨 크기</b><span>앱 전체 글씨와 버튼을 키워요</span></div>
+            <div class="seg" id="seg-font"></div>
+          </div>
           <div class="opt">
             <div class="t"><b>자세</b><span>사우스포면 훅·어퍼의 좌우를 바꿔 불러요</span></div>
             <div class="seg" id="seg-stance" style="flex:none"></div>
           </div>
           <div class="opt"><div class="t"><b>글러브 모드</b><span>운동 중 화면 아무 데나 두 번 탭하면 멈춤·계속, 버튼도 크게</span></div><button class="sw" id="sw-glove" role="switch" aria-label="글러브 모드"><i></i></button></div>
           <div class="opt"><div class="t"><b>가로 모드</b><span>운동 중 가로로 세우면 크게 보여요</span></div><button class="sw" id="sw-land" role="switch" aria-label="가로 모드"><i></i></button></div>
+          <div class="opt"><div class="t"><b>화면이 꺼지면 일시정지</b><span>끄면 화면이 꺼져도 시간은 계속 흘러가요</span></div><button class="sw" id="sw-bgp" role="switch" aria-label="화면이 꺼지면 일시정지"><i></i></button></div>
           <div class="opt">
             <div class="t"><b>준비 시간</b><span>시작 누르고 글러브 낄 시간</span></div>
             <div class="seg" id="seg-prep" style="flex:none"></div>
@@ -1301,7 +1317,7 @@ function load(){
       notes:[],weights:[]
     };
   }
-  d.cfg=Object.assign({round:180,rest:60,rounds:3,prep:10,combo:'mid',call:'num',voice:true,warn:true,preset:'am',goal:3,mode:'preset',routine:null,after:'ask',lens:[1,2,3],mine:'mix',body:'mix',tone:'deep',voiceName:'',stance:'ortho',glove:false,vsrc:'tts',branch:'sejong',vib:true,land:true,lastBackup:0},d.cfg);
+  d.cfg=Object.assign({round:180,rest:60,rounds:3,prep:10,combo:'mid',call:'num',voice:true,warn:true,preset:'am',goal:3,mode:'preset',routine:null,after:'ask',lens:[1,2,3],mine:'mix',body:'mix',tone:'deep',voiceName:'',stance:'ortho',glove:false,vsrc:'tts',branch:'sejong',vib:true,land:true,lastBackup:0,font:0,bgPause:false},d.cfg);
   d.records=(d.records||[]).map(normRec);
   d.notes=d.notes||[];d.weights=d.weights||[];d.events=d.events||[];d.combos=(d.combos||[]).map(x=>({...x,code:x.code.replace(/[1-6]b/g,'Y')})).filter((x,i,a)=>typeof x.code==='string'&&/^[1-6SDWPBGYZ](-[1-6SDWPBGYZ]){0,9}$/.test(x.code)&&a.findIndex(y=>y.code===x.code)===i);
   if(!d.presets.some(p=>p.id==='rope')&&!d.routines)d.presets.push({...DEFAULT_PRESETS.find(p=>p.id==='rope')});
@@ -1368,10 +1384,11 @@ function strike(t){
     o.connect(gn).connect(master);o.start(t);o.stop(t+d+.05);
   });
 }
-const buzz=pat=>{try{if(cfg().vib&&navigator.vibrate)navigator.vibrate(pat)}catch(e){}};
-function bell(n){buzz(n>1?[220,120,220,120,220]:[350]);if(!ac)return;const t=ac.currentTime+.02;for(let i=0;i<n;i++)strike(t+i*.3)}
-function beep(f){if(!ac)return;const t=ac.currentTime+.01,o=ac.createOscillator(),g=ac.createGain();o.type='square';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.005);g.gain.exponentialRampToValueAtTime(.0001,t+.13);o.connect(g).connect(master);o.start(t);o.stop(t+.15)}
-function clack(){buzz([70,60,70]);if(!ac)return;[0,.16].forEach(dt=>{const t=ac.currentTime+.01+dt,s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();s.buffer=noise;f.type='bandpass';f.frequency.value=2300;f.Q.value=3;g.gain.value=1.6;s.connect(f).connect(g).connect(master);s.start(t)})}
+let QUIET=false;
+const buzz=pat=>{if(QUIET)return;try{if(cfg().vib&&navigator.vibrate)navigator.vibrate(pat)}catch(e){}};
+function bell(n){if(QUIET)return;buzz(n>1?[220,120,220,120,220]:[350]);if(!ac)return;const t=ac.currentTime+.02;for(let i=0;i<n;i++)strike(t+i*.3)}
+function beep(f){if(QUIET||!ac)return;const t=ac.currentTime+.01,o=ac.createOscillator(),g=ac.createGain();o.type='square';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.005);g.gain.exponentialRampToValueAtTime(.0001,t+.13);o.connect(g).connect(master);o.start(t);o.stop(t+.15)}
+function clack(){if(QUIET)return;buzz([70,60,70]);if(!ac)return;[0,.16].forEach(dt=>{const t=ac.currentTime+.01+dt,s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();s.buffer=noise;f.type='bandpass';f.frequency.value=2300;f.Q.value=3;g.gain.value=1.6;s.connect(f).connect(g).connect(master);s.start(t)})}
 let koVoice=null,koVoices=[];
 const MALE=/injoon|in-joon|hyunsu|minjun|bongjin|gookmin|jihun|seunghoon|male|남성|남자/i;
 function pickVoice(){
@@ -1389,6 +1406,7 @@ function unlockSpeech(){
   try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;u.lang='ko-KR';speechSynthesis.speak(u);speechUnlocked=true}catch(e){}
 }
 function speak(text,force){
+  if(QUIET)return;
   if((!cfg().voice&&!force)||!('speechSynthesis' in window))return;
   try{
     const ss=speechSynthesis,busy=ss.speaking||ss.pending;
@@ -1440,7 +1458,18 @@ function playClips(toks0){
 let wl=null;
 async function wake(){try{if(navigator.wakeLock&&!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null})}}catch(e){wl=null}}
 function unwake(){try{wl&&wl.release()}catch(e){}wl=null}
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&S.running)wake()});
+let hiddenAt=0,pausedByHide=false;
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden'){
+    hiddenAt=Date.now();
+    if(S.running&&cfg().bgPause&&['prep','work','rest'].includes(S.phase)){toggle();pausedByHide=true}
+    return;
+  }
+  const away=hiddenAt?Date.now()-hiddenAt:0;hiddenAt=0;
+  try{ensureAudio()}catch(e){}
+  if(pausedByHide){pausedByHide=false;showAway('화면이 꺼져서 일시정지했어요','가운데 버튼을 누르면 이어서 해요');return}
+  if(S.running){wake();const n=fastForward();render();catchUpNotice(n,away)}
+});
 
 /* ---------- 콤비 ---------- */
 const isSouth=()=>cfg().stance==='south';
@@ -1618,6 +1647,34 @@ function callCombo(){
   let c;do{c=P[Math.floor(Math.random()*P.length)]}while(P.length>1&&c===S.lastCombo);
   S.lastCombo=c;S.combo=c;renderCombo();sayCombo(c);
 }
+/* 화면이 꺼졌다 돌아왔을 때: 지난 구간을 조용히 넘기고 지금 위치로 맞추기 */
+function fastForward(){
+  if(!S.running||S.phase==='done'||S.phase==='idle')return 0;
+  const t=now();let n=0;
+  QUIET=true;
+  try{
+    while(S.running&&S.phase!=='done'&&t>=S.endAt&&n<500){
+      const prevEnd=S.endAt;S.left=0;advance();n++;
+      if(!S.running||S.phase==='done')break;
+      S.endAt=prevEnd+S.dur*1000;S.left=S.endAt-t;S.lastSec=Math.ceil(S.left/1000);
+      if(S.phase==='work')scheduleCombo(1500);
+    }
+  }finally{QUIET=false}
+  return n;
+}
+function catchUpNotice(n,away){
+  if(!n)return;
+  const mins=Math.round(away/60000),awayTxt=mins>=1?`${mins}분`:`${Math.round(away/1000)}초`;
+  let now_;
+  if(S.phase==='done')now_='그사이 운동이 모두 끝났어요';
+  else{const st=curStep();now_=S.phase==='rest'?`지금은 휴식 중 · ${fmt(Math.ceil(S.left/1000))} 남음`:S.phase==='prep'?'지금은 준비 중':`지금은 라운드 ${st?st.gr:''} · ${fmt(Math.ceil(S.left/1000))} 남음`}
+  showAway(`화면이 꺼진 ${awayTxt} 동안 ${n}구간이 지나갔어요`,now_);
+}
+function showAway(a,b){
+  const el=$('awaybar');el.innerHTML=`<b>${esc(a)}</b><span>${esc(b)}</span>`;el.hidden=false;
+  clearTimeout(showAway.t);showAway.t=setTimeout(()=>{el.hidden=true},7000);
+}
+function applyFont(){const f=+cfg().font||0;document.body.classList.toggle('fz1',f===1);document.body.classList.toggle('fz2',f===2)}
 function tick(){
   if(!S.running)return;
   const t=now(),ms=S.endAt-t;S.left=ms;
@@ -1627,6 +1684,7 @@ function tick(){
     if(S.phase==='work'&&cfg().warn&&sec===10&&S.dur>15)clack();
     if((S.phase==='prep'||S.phase==='rest')&&sec>0&&sec<=3)beep(sec===1?1175:880);
   }
+  if(ms<-1500){const n=fastForward();render();catchUpNotice(n,-ms);return}
   if(ms<=0){advance();return}
   if(S.phase==='work'&&cfg().combo!=='off'&&blockCalls()&&t>=S.nextCombo&&ms>2500){callCombo();scheduleCombo()}
   drawClock();
@@ -1808,6 +1866,9 @@ function renderSetup(){
   $('go-mine').onclick=()=>{techTab='combo';tab('tech')};
   seg('seg-call',[['num','숫자'],['name','기술명']],'call');
   seg('seg-prep',[[0,'없음'],[5,'5초'],[10,'10초'],[20,'20초']],'prep');
+  seg('seg-font',[[0,'기본'],[1,'크게'],[2,'아주 크게']],'font');
+  applyFont();
+  sw('sw-bgp','bgPause');
   seg('seg-stance',[['ortho','오소독스'],['south','사우스포']],'stance',()=>{renderPunches();renderStanceChip()});
   sw('sw-glove','glove');$('sw-glove').addEventListener('click',applyGlove);
   document.body.classList.toggle('glove',!!c.glove);
@@ -1819,7 +1880,7 @@ function renderSetup(){
   const mineL={off:'내 콤비 안 씀',mix:'내 콤비 섞어서',only:'내 콤비만'}[c.mine]||'',callL=c.call==='num'?'숫자로 부르기':'기술명으로 부르기';
   $('m-combo-sum').textContent=`${mineL} · ${callL}`;
   $('m-sound-sum').textContent=`${c.vsrc==='rec'?'녹음한 목소리':{deep:'굵고 낮은 목소리',strong:'힘 있는 목소리',normal:'기본 목소리'}[c.tone||'deep']} · 경고음 ${c.warn?'켬':'끔'} · 진동 ${c.vib?'켬':'끔'}`;
-  $('m-etc-sum').textContent=`${c.stance==='south'?'사우스포':'오소독스'} · 준비 ${c.prep}초${c.glove?' · 글러브 모드':''}${c.land?' · 가로 모드':''}`;
+  $('m-etc-sum').textContent=`${['글씨 기본','글씨 크게','글씨 아주 크게'][c.font||0]} · ${c.stance==='south'?'사우스포':'오소독스'} · 준비 ${c.prep}초${c.glove?' · 글러브 모드':''}${c.land?' · 가로 모드':''}`;
   seg('seg-vsrc',[['tts','기기 음성'],['rec','내가 녹음한 목소리']],'vsrc');
   seg('seg-tone',[['deep','굵고 낮게'],['strong','힘 있게'],['normal','기본']],'tone');
   const rec=c.vsrc==='rec',n=clipCount();
